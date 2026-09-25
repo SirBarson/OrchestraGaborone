@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaborone Community Orchestra</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LIVE ANNOUNCEMENT BANNER
+     Auto-filled by js/script.js from the
+     admin portal. Hidden when empty.
+══════════════════════════════════════ -->
+<div id="gcoAnnouncementBanner" style="display:none"></div>
+
+<!-- ══════════════════════════════════════
+     NAV
+══════════════════════════════════════ -->
+<nav>
+  <a href="#home" class="nav-logo">
+    <img class="brand-logo" src="assets/images/logo-placeholder.svg" alt="Orchestra logo placeholder">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#membership">Members</a></li>
+    <li><a href="register.html">JOIN / AUDITION</a></li>
+    <li><a href="portal.html">PORTAL</a></li>
+    <li><a href="#watch">Watch & Listen</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#donate" class="btn-donate" onclick="openDonateModal();return false">♥ Donate</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="closeMenu()">Home</a>
+  <a href="#about" onclick="closeMenu()">About</a>
+  <a href="#membership" onclick="closeMenu()">Members</a>
+  <a href="register.html" onclick="closeMenu()">Join / Audition</a>
+  <a href="portal.html" onclick="closeMenu()">Portal</a>
+  <a href="#watch" onclick="closeMenu()">Watch & Listen</a>
+  <a href="#contact" onclick="closeMenu()">Contact</a>
+  <a href="#donate" class="btn-donate-m" onclick="closeMenu();openDonateModal();return false">♥ Donate</a>
+</div>
+
+<!-- ══════════════════════════════════════
+     HERO — BACKGROUND VIDEO
+══════════════════════════════════════ -->
+<section id="home" style="padding:0">
+  <div class="hero-video-wrap">
+    <!-- 🟢 REPLACE src BELOW WITH YOUR OWN VIDEO PATH -->
+    <video autoplay loop playsinline preload="auto" id="heroVideo"
+      aria-label="Background video of clouds and live orchestra atmosphere">
+      <source src="assets/video/background.mp4" type="video/mp4">
+      <!-- 🟢 OPTIONAL: add a second <source> as fallback format -->
+      <!-- <source src="assets/video/YOUR_BACKGROUND_VIDEO.webm" type="video/webm"> -->
+    </video>
+    <!-- Gradient overlay — do not remove -->
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">🎼 Gaborone, Botswana</p>
+    <h1 class="hero-title">Gaborone Community Orchestra</h1>
+    <p class="hero-sub">Botswana's vibrant community orchestra — bringing the power of live music to every corner of Gaborone since 2025.</p>
+    <div class="hero-actions">
+      <a href="#watch" class="btn-primary">▶ WATCH US PERFORM</a>
+      <a href="#contact" class="btn-outline">BOOK US</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <svg width="14" height="22" viewBox="0 0 14 22"><rect x="4" y="0.5" width="5" height="9" rx="2.5" stroke="currentColor" fill="none" stroke-width="1.2"/><line x1="6.5" y1="11" x2="6.5" y2="21" stroke="currentColor" stroke-width="1.2"/><polyline points="3,17 6.5,21 10,17" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+    Scroll
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     LIVE UPCOMING EVENTS
+     Auto-filled by js/script.js from the
+     admin portal. Hidden when empty.
+══════════════════════════════════════ -->
+<section id="gcoUpcomingEvents" style="display:none"></section>
+
+<!-- ══════════════════════════════════════
+     PORTAL (hidden on homepage)
+══════════════════════════════════════ -->
+<section id="portal" class="portal-section" style="display:none">
+  <div class="container">
+    <p class="section-label">GCO Connect</p>
+    <h2 class="section-title">One Portal. <em>Every Voice.</em></h2>
+    <p class="section-body portal-intro">A private space for members to keep their profile current and a focused workspace for approved administrators to publish the orchestra's next story.</p>
+    <div class="portal-tabs" role="tablist" aria-label="Portal areas">
+      <button class="portal-tab active" role="tab" aria-selected="true" onclick="showPortalPanel('memberPortalPanel', this)">Member Portal</button>
+      <button class="portal-tab" role="tab" aria-selected="false" onclick="showPortalPanel('adminPortalPanel', this)">Admin Portal</button>
+    </div>
+    <div id="memberPortalPanel" class="portal-panel active" role="tabpanel">
+      <div class="portal-grid">
+        <div class="portal-card profile-card">
+          <div class="profile-heading"><div class="profile-avatar">GCO</div><div><span class="status-pill">Verified member</span><h3>Your musician profile</h3></div></div>
+          <form onsubmit="saveMemberProfile(event)">
+            <div class="form-row"><div class="form-group"><label for="portalName">Full name</label><input id="portalName" value="Your name"></div><div class="form-group"><label for="portalInstrument">Instrument</label><input id="portalInstrument" placeholder="e.g. Violin"></div></div>
+            <div class="form-row"><div class="form-group"><label for="portalEmail">Email</label><input id="portalEmail" type="email" placeholder="you@example.com"></div><div class="form-group"><label for="portalPhone">Phone</label><input id="portalPhone" type="tel" placeholder="+267 ..."></div></div>
+            <div class="form-group"><label for="portalBio">Short musician bio</label><textarea id="portalBio" placeholder="Tell the orchestra community about your musical journey"></textarea></div>
+            <button class="btn-primary" type="submit">Save profile</button>
+          </form>
+        </div>
+        <div class="portal-card">
+          <span class="portal-kicker">Account security</span><h3>Email verification</h3>
+          <p class="portal-copy">Keep your email verified so you receive rehearsal, audition, and concert notices.</p>
+          <div class="verification-row"><span class="verification-dot"></span><strong id="verificationStatus">Email not verified</strong></div>
+          <button class="btn-outline" id="sendOtpButton" type="button" onclick="verifyMemberEmail()">SEND OTP TO EMAIL</button>
+          <div class="otp-group" id="otpGroup" hidden>
+            <label for="emailOtp">Email OTP</label>
+            <input id="emailOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter 6-digit code">
+            <button class="btn-primary" type="button" onclick="confirmMemberEmail()">VERIFY OTP</button>
+          </div>
+          <small class="verification-help">Enter your email above, request an OTP, then verify it before your application can be approved.</small>
+          <hr>
+          <span class="portal-kicker">Member directory</span><h3>View orchestra members</h3>
+          <p class="portal-copy">Browse the public musician profiles and discover the people behind the sound.</p>
+          <a class="btn-primary" href="#membership">Open member directory</a>
+        </div>
+      </div>
+    </div>
+    <div id="adminPortalPanel" class="portal-panel" role="tabpanel" hidden>
+      <div id="adminLoginView" class="admin-login-view">
+        <div class="admin-login-card">
+          <span class="portal-kicker">Restricted workspace</span>
+          <h3>Administrator sign in</h3>
+          <p class="portal-copy">Use the demo credentials below to preview the GCO administration portal.</p>
+          <div class="demo-credentials"><span>Demo username: <strong>admin@gco.bw</strong></span><span>Demo password: <strong>GCO-Admin-2025</strong></span></div>
+          <div class="form-group"><label for="adminUsername">Username</label><input id="adminUsername" type="email" autocomplete="username" placeholder="admin@gco.bw"></div>
+          <div class="form-group"><label for="adminPassword">Password</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="GCO-Admin-2025"></div>
+          <button class="btn-primary" type="button" onclick="adminSignIn()">Sign in to admin portal</button>
+          <small id="adminLoginMessage" class="login-message"></small>
+        </div>
+      </div>
+      <div id="adminDashboard" class="admin-dashboard" hidden>
+      <div class="admin-banner"><div><strong>Administrator dashboard</strong><span>Signed in as <b id="adminSignedInAs">admin@gco.bw</b></span></div><button class="small-action" onclick="adminSignOut()">Sign out</button></div>
+      <div class="dashboard-metrics">
+        <div class="metric-card"><span>Active members</span><strong>11</strong><small>+2 this month</small></div>
+        <div class="metric-card"><span>Pending approvals</span><strong id="pendingCount">2</strong><small>Needs review</small></div>
+        <div class="metric-card"><span>Published stories</span><strong>18</strong><small>+4 this quarter</small></div>
+        <div class="metric-card"><span>Monthly donations</span><strong>P8,450</strong><small>+12.4%</small></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="portal-card chart-card"><div class="card-heading"><div><span class="portal-kicker">Reach overview</span><h3>Community activity</h3></div><span class="chart-period">Last 6 months</span></div><div class="activity-chart" aria-label="Community activity chart"><span style="height:35%"></span><span style="height:52%"></span><span style="height:44%"></span><span style="height:68%"></span><span style="height:76%"></span><span style="height:92%"></span></div><div class="chart-labels"><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span></div></div>
+        <div class="portal-card"><div class="card-heading"><div><span class="portal-kicker">Admin chat</span><h3>Team inbox</h3></div><span class="online-status">● Live</span></div><div class="admin-chat"><div><b>Membership desk</b><span>3 new audition requests</span><time>10m</time></div><div><b>Events coordinator</b><span>Wedding booking enquiry</span><time>1h</time></div><div><b>Media team</b><span>New concert photos uploaded</span><time>3h</time></div></div><button class="btn-outline" type="button" onclick="showToast('Admin inbox opened in the full dashboard.')">Open team inbox</button></div>
+      </div>
+      <div class="portal-grid">
+        <div class="portal-card">
+          <span class="portal-kicker">Review queue</span><h3>Pending registrations</h3>
+          <div class="approval-item"><div><strong>New musician application</strong><span>Submitted today · audition requested</span></div><button class="small-action" onclick="approveRegistration(this)">Approve</button></div>
+          <div class="approval-item"><div><strong>Profile update request</strong><span>Submitted yesterday · photo included</span></div><button class="small-action" onclick="approveRegistration(this)">Review</button></div>
+        </div>
+        <div class="portal-card">
+          <span class="portal-kicker">Content studio</span><h3>Publish to the website</h3>
+          <form onsubmit="publishAdminContent(event)">
+            <div class="form-group"><label for="contentType">Content type</label><select id="contentType"><option>Blog article</option><option>Performance video</option><option>Gallery photo</option><option>Concert announcement</option></select></div>
+            <div class="form-group"><label for="contentTitle">Title</label><input id="contentTitle" required placeholder="Give this update a clear title"></div>
+            <div class="form-group"><label for="contentFile">Upload image or video</label><input id="contentFile" type="file" accept="image/*,video/*"><small class="upload-help">Files stay local in this demo until connected to secure storage.</small></div>
+            <div class="form-group"><label for="contentBody">Description</label><textarea id="contentBody" placeholder="Write the story or announcement"></textarea></div>
+            <button class="btn-primary" type="submit">Save draft for approval</button>
+          </form>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     REGISTER / AUDITION CTA
+══════════════════════════════════════ -->
+<section id="register" class="involvement-section">
+  <div class="container">
+    <p class="section-label">Get Involved</p>
+    <h2 class="section-title">Find Your Place in the <em>Orchestra</em></h2>
+    <div class="involvement-grid">
+      <article class="involvement-card">
+        <span class="involvement-icon">🎻</span>
+        <h3>Register as a Member</h3>
+        <p>Join our community of musicians, support our programmes, and receive rehearsal and concert updates.</p>
+        <button class="btn-primary" onclick="openModal('membership')">Member Registration</button>
+      </article>
+      <article class="involvement-card">
+        <span class="involvement-icon">🎼</span>
+        <h3>Apply for an Audition</h3>
+        <p>Tell us about your instrument and experience. We welcome beginners, students, and experienced players.</p>
+        <button class="btn-outline" onclick="openModal('audition')">Audition Application</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     ABOUT
+══════════════════════════════════════ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <p class="section-label">Who We Are</p>
+        <h2 class="section-title">A Symphony<br>Born from <em>Botswana</em></h2>
+        <p class="section-body" style="margin-bottom:16px">
+          Founded in 2025 by a passionate group of musicians and music educators, the Gaborone Community Orchestra has quickly become one of Botswana's most celebrated ensembles. We bring together musicians of all backgrounds — from students to seasoned professionals — united by a love of music.
+        </p>
+        <p class="section-body" style="margin-bottom:28px">
+          Our mission is to make orchestral music accessible, vibrant, and deeply woven into the cultural fabric of Gaborone. We perform across schools, community centres, and concert halls throughout the year.
+        </p>
+        <a href="#membership" class="btn-primary">Meet Our Members</a>
+      </div>
+
+      <div>
+        <div class="about-photo">
+          <img src="assets/images/YOUR_ABOUT_PHOTO.jpg" alt="Gaborone Community Orchestra"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="about-photo-placeholder" style="display:none">
+            <span>🎼</span>
+            <p style="color:var(--muted);font-size:0.8rem;text-align:center">Add your group photo here<br><code style="color:var(--gold);font-size:0.72rem">src="assets/images/YOUR_ABOUT_PHOTO.jpg"</code></p>
+          </div>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card"><div class="stat-num">11</div><div class="stat-label">Core Members</div></div>
+          <div class="stat-card"><div class="stat-num">2025</div><div class="stat-label">Year Founded</div></div>
+          <div class="stat-card"><div class="stat-num">10+</div><div class="stat-label">Performances</div></div>
+          <div class="stat-card"><div class="stat-num">∞</div><div class="stat-label">Passion for Music</div></div>
+        </div>
+      </div>
+    </div>
+
+    <article class="founder-card">
+      <div class="founder-photo">
+        <img src="assets/images/founder-darious-kamwi.jpg" alt="Darious Kamwi, Founder of Gaborone Community Orchestra"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="founder-photo-placeholder" style="display:none">
+          <span>DK</span>
+          <small>Add founder portrait<br><code>assets/images/founder-darious-kamwi.jpg</code></small>
+        </div>
+      </div>
+      <div class="founder-content">
+        <p class="section-label">Founder's Note</p>
+        <h2 class="section-title">Meet <em>Darious Kamwi</em></h2>
+        <p class="founder-role">Founder &amp; Artistic Director</p>
+        <p class="section-body">"The Gaborone Community Orchestra was founded to create a welcoming home for musicians, inspire young people through music, and make orchestral performance part of everyday community life in Botswana."</p>
+        <div class="founder-details">
+          <div><span>Founded</span><strong>Gaborone Community Orchestra · 2025</strong></div>
+          <div><span>Focus</span><strong>Community music, education &amp; live performance</strong></div>
+          <div><span>Vision</span><strong>More access to orchestral music for every generation</strong></div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div class="staff-divider" aria-hidden="true">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <line x1="0" y1="12" x2="1200" y2="12"></line>
+    <line x1="0" y1="24" x2="1200" y2="24"></line>
+    <line x1="0" y1="36" x2="1200" y2="36"></line>
+    <line x1="0" y1="48" x2="1200" y2="48"></line>
+    <text x="50%" y="46" text-anchor="middle" class="clef">𝄞</text>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════════
+     MEMBERS
+══════════════════════════════════════ -->
+<section id="membership">
+  <div class="container">
+    <p class="section-label">Our Orchestra</p>
+    <h2 class="section-title">Meet Our <em>Members</em></h2>
+    <p class="section-body" style="max-width:520px">Each musician brings a unique voice to our ensemble. From strings to percussion, our members span all ages and walks of life.</p>
+    <div class="member-filters" role="group" aria-label="Filter members by section">
+      <button class="member-filter active" type="button" data-filter="all">ALL MEMBERS</button>
+      <button class="member-filter" type="button" data-filter="strings"><i class="fa-solid fa-music"></i> STRINGS</button>
+      <button class="member-filter" type="button" data-filter="brass"><i class="fa-solid fa-bullhorn"></i> BRASS</button>
+      <button class="member-filter" type="button" data-filter="woodwind"><i class="fa-solid fa-wind"></i> WOODWINDS</button>
+      <button class="member-filter" type="button" data-filter="percussion"><i class="fa-solid fa-drum"></i> PERCUSSION</button>
+      <button class="member-filter" type="button" data-filter="keyboard"><i class="fa-solid fa-keyboard"></i> KEYBOARD</button>
+      <button class="member-filter" type="button" data-filter="vocals"><i class="fa-solid fa-microphone"></i> VOCALS</button>
+      <button class="member-filter" type="button" data-filter="other"><i class="fa-solid fa-music"></i> OTHER</button>
+    </div>
+
+    <div class="members-grid">
+      <!-- MEMBER 1 — TINA -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=85" alt="Tina"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Tina's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Tina</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Violin · Lead</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 2 — VALENTINE -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=700&q=85" alt="Valentine"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Valentine's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Valentine</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Piano · Keyboard</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 3 — LEBURU -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=700&q=85" alt="Leburu"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Leburu's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Leburu</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Guitar · Strings</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 4 — DENZEL -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1524650359799-842906ca1c06?auto=format&fit=crop&w=700&q=85" alt="Denzel"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Denzel's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Denzel</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Trumpet · Brass</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 5 — MICHELLE -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=700&q=85" alt="Michelle"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Michelle's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Michelle</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Flute · Woodwind</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 6 — TSHEPISO -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=700&q=85" alt="Tshepiso"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Tshepiso's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Tshepiso</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Cello · Strings</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 7 — BRANDON -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=700&q=85" alt="Brandon"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Brandon's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Brandon</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Percussion · Drums</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 8 — THERO -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=700&q=85" alt="Thero"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Thero's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Thero</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Saxophone · Woodwind</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 9 — JULIA -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=700&q=85" alt="Julia"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Julia's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Julia</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Violin · Strings</div>
+        </div>
+      </div>
+
+      <!-- MEMBER 10 — OBAKENG -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=700&q=85" alt="Obakeng"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Obakeng's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Obakeng</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">Bass Guitar · Other</div>
+        </div>
+      </div>
+
+      <!-- Fictional samples -->
+      <div class="member-card sample-member">
+        <div class="member-photo"><div class="member-photo-placeholder"><span>🎹</span><small>Sample profile</small></div></div>
+        <div class="member-info"><div class="member-name">Mpho Sample</div><div class="member-age">Fictional sample</div><div class="member-role">Keyboard · Piano</div></div>
+      </div>
+      <div class="member-card sample-member">
+        <div class="member-photo"><div class="member-photo-placeholder"><span>🎤</span><small>Sample profile</small></div></div>
+        <div class="member-info"><div class="member-name">Kea Sample</div><div class="member-age">Fictional sample</div><div class="member-role">Vocals · Soprano</div></div>
+      </div>
+      <div class="member-card sample-member">
+        <div class="member-photo"><div class="member-photo-placeholder"><span>🎸</span><small>Sample profile</small></div></div>
+        <div class="member-info"><div class="member-name">Neo Sample</div><div class="member-age">Fictional sample</div><div class="member-role">Other · Guitar</div></div>
+      </div>
+
+      <!-- MEMBER 11 — BARSON -->
+      <div class="member-card">
+        <div class="member-photo">
+          <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=700&q=85" alt="Barson"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="member-photo-placeholder" style="display:none"><span>🎵</span><small>Barson's photo</small></div>
+        </div>
+        <div class="member-info">
+          <div class="member-name">Barson</div>
+          <div class="member-age">Age — add age</div>
+          <div class="member-role">French Horn · Brass</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="join-cta">
+      <h3>Want to Join Our Orchestra?</h3>
+      <p>We welcome musicians of all skill levels. Auditions are open — come play with us!</p>
+      <button class="btn-primary" onclick="openModal()">Apply for Membership</button>
+    </div>
+  </div>
+</section>
+
+<div class="staff-divider" aria-hidden="true">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <line x1="0" y1="12" x2="1200" y2="12"></line>
+    <line x1="0" y1="24" x2="1200" y2="24"></line>
+    <line x1="0" y1="36" x2="1200" y2="36"></line>
+    <line x1="0" y1="48" x2="1200" y2="48"></line>
+    <text x="50%" y="46" text-anchor="middle" class="clef">𝄞</text>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════════
+     WATCH & LISTEN + BLOG
+══════════════════════════════════════ -->
+<section id="watch">
+  <div class="container">
+
+    <p class="section-label">Performances</p>
+    <h2 class="section-title">Watch & <em>Listen</em></h2>
+    <p class="section-body" style="max-width:520px;margin-bottom:40px">Relive our greatest performances or discover us for the first time. Every concert tells a story.</p>
+
+    <!-- FEATURED VIDEO -->
+    <div class="media-featured">
+      <div class="media-video-wrap">
+        <video controls preload="metadata" id="featuredVideo"
+          onerror="document.getElementById('featuredVideoFallback').style.display='flex';this.style.display='none'">
+          <source src="assets/video/background.mp4" type="video/mp4">
+        </video>
+        <div id="featuredVideoFallback" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:var(--panel2);color:var(--muted);font-size:0.82rem;text-align:center;padding:20px;">
+          <span style="font-size:3rem">🎬</span>
+          <p>Add your featured performance video<br><code style="color:var(--gold);font-size:0.72rem">src="assets/video/YOUR_FEATURED_VIDEO.mp4"</code></p>
+        </div>
+      </div>
+      <div class="media-info">
+        <h3>🎼 Grand Concert 2025 — Live at the Gaborone International Convention Centre</h3>
+        <p>Our debut concert featuring original compositions by our members — a night of unforgettable music that launched the GCO's journey.</p>
+      </div>
+    </div>
+
+    <!-- VIDEO THUMBNAILS (auto-replaced by live content) -->
+    <div class="media-grid">
+
+      <div class="media-thumb" onclick="showToast('Opening video...')">
+        <div class="thumb-img">
+          <img src="assets/images/YOUR_THUMB_1.jpg" alt="Spring Serenade 2025"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-img-placeholder" style="display:none"><span>🎻</span><small>Thumbnail 1</small></div>
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="thumb-info"><h4>Spring Serenade 2025</h4><span>March 2025</span></div>
+      </div>
+
+      <div class="media-thumb" onclick="showToast('Opening video...')">
+        <div class="thumb-img">
+          <img src="assets/images/YOUR_THUMB_2.jpg" alt="Brass & Beyond"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-img-placeholder" style="display:none"><span>🎺</span><small>Thumbnail 2</small></div>
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="thumb-info"><h4>Brass & Beyond Festival</h4><span>July 2025</span></div>
+      </div>
+
+      <div class="media-thumb" onclick="showToast('Opening video...')">
+        <div class="thumb-img">
+          <img src="assets/images/YOUR_THUMB_3.jpg" alt="Jazz Night"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-img-placeholder" style="display:none"><span>🎷</span><small>Thumbnail 3</small></div>
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="thumb-info"><h4>Jazz Night at Botswana Craft</h4><span>October 2025</span></div>
+      </div>
+
+      <div class="media-thumb" onclick="showToast('Opening video...')">
+        <div class="thumb-img">
+          <img src="assets/images/YOUR_THUMB_4.jpg" alt="Percussion Showcase"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-img-placeholder" style="display:none"><span>🥁</span><small>Thumbnail 4</small></div>
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="thumb-info"><h4>Percussion Showcase 2025</h4><span>November 2025</span></div>
+      </div>
+
+      <div class="media-thumb" onclick="showToast('Opening video...')">
+        <div class="thumb-img">
+          <img src="assets/images/YOUR_THUMB_5.jpg" alt="Piano Evening"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-img-placeholder" style="display:none"><span>🎹</span><small>Thumbnail 5</small></div>
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="thumb-info"><h4>Piano Concerto Evening</h4><span>August 2025</span></div>
+      </div>
+
+      <div class="media-thumb" onclick="showToast('Opening video...')">
+        <div class="thumb-img">
+          <img src="assets/images/YOUR_THUMB_6.jpg" alt="Youth Showcase"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-img-placeholder" style="display:none"><span>🎼</span><small>Thumbnail 6</small></div>
+          <div class="play-icon">▶</div>
+        </div>
+        <div class="thumb-info"><h4>Debut Showcase Night</h4><span>June 2025</span></div>
+      </div>
+    </div>
+
+    <!-- BLOG -->
+    <div style="padding-top:72px;border-top:1px solid rgba(200,151,42,0.1);margin-top:32px">
+      <p class="section-label">News & Highlights</p>
+      <h2 class="blog-section-title">Performance <em>Blog</em></h2>
+      <p class="section-body" style="max-width:500px">Behind-the-scenes stories and highlights from our performances throughout 2025.</p>
+
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-header" style="background:linear-gradient(135deg,#1a1a2e,#0f3460)">
+            <img src="assets/images/YOUR_BLOG_1.jpg" alt="Grand Concert 2025"
+              onerror="this.style.display='none'" style="position:absolute;inset:0">
+            🎼
+            <div class="blog-tag">Highlight</div>
+          </div>
+          <div class="blog-body">
+            <p class="blog-date">December 2025</p>
+            <h3>Grand Winter Concert — Our Biggest Night Yet</h3>
+            <p>An unforgettable evening of orchestral music at the GICC marked the end of our debut year, drawing hundreds of Gaborone music lovers.</p>
+            <a href="#" class="blog-read" onclick="showToast('Blog opening...');return false">Read More →</a>
+          </div>
+        </div>
+
+        <div class="blog-card">
+          <div class="blog-header" style="background:linear-gradient(135deg,#16213e,#0a3622)">
+            <img src="assets/images/YOUR_BLOG_2.jpg" alt="Schools Outreach"
+              onerror="this.style.display='none'" style="position:absolute;inset:0">
+            🏫
+            <div class="blog-tag">Outreach</div>
+          </div>
+          <div class="blog-body">
+            <p class="blog-date">September 2025</p>
+            <h3>Schools Tour: Inspiring the Next Generation</h3>
+            <p>Our outreach programme visited primary schools across Gaborone in 2025, performing for hundreds of young learners and sparking a love for music.</p>
+            <a href="#" class="blog-read" onclick="showToast('Blog opening...');return false">Read More →</a>
+          </div>
+        </div>
+
+        <div class="blog-card">
+          <div class="blog-header" style="background:linear-gradient(135deg,#2d1b00,#4a2e00)">
+            <img src="assets/images/YOUR_BLOG_3.jpg" alt="Brass Festival"
+              onerror="this.style.display='none'" style="position:absolute;inset:0">
+            🎺
+            <div class="blog-tag">Festival</div>
+          </div>
+          <div class="blog-body">
+            <p class="blog-date">July 2025</p>
+            <h3>Brass & Beyond: Our First All-Brass Festival</h3>
+            <p>A spectacular evening celebrating brass instruments — from classical fanfares to jazz improvisation that had the crowd on their feet.</p>
+            <a href="#" class="blog-read" onclick="showToast('Blog opening...');return false">Read More →</a>
+          </div>
+        </div>
+
+        <div class="blog-card">
+          <div class="blog-header" style="background:linear-gradient(135deg,#1a0a2e,#3a1060)">
+            <img src="assets/images/YOUR_BLOG_4.jpg" alt="Launch Night"
+              onerror="this.style.display='none'" style="position:absolute;inset:0">
+            🌟
+            <div class="blog-tag">Launch</div>
+          </div>
+          <div class="blog-body">
+            <p class="blog-date">March 2025</p>
+            <h3>We're Live! GCO Launches with a Sold-Out Debut</h3>
+            <p>The Gaborone Community Orchestra officially launched in March 2025 with a sold-out debut performance that took the city by storm.</p>
+            <a href="#" class="blog-read" onclick="showToast('Blog opening...');return false">Read More →</a>
+          </div>
+        </div>
+
+        <div class="blog-card">
+          <div class="blog-header" style="background:linear-gradient(135deg,#0a2020,#0a3a30)">
+            <img src="assets/images/YOUR_BLOG_5.jpg" alt="New Members"
+              onerror="this.style.display='none'" style="position:absolute;inset:0">
+            🎵
+            <div class="blog-tag">Members</div>
+          </div>
+          <div class="blog-body">
+            <p class="blog-date">January 2025</p>
+            <h3>Meet the Founding 11: The Faces Behind GCO</h3>
+            <p>Tina, Valentine, Leburu, Denzel, Michelle, Tshepiso, Brandon, Thero, Julia, Obakeng, and Barson — meet the talented musicians who started it all.</p>
+            <a href="#" class="blog-read" onclick="showToast('Blog opening...');return false">Read More →</a>
+          </div>
+        </div>
+
+        <div class="blog-card">
+          <div class="blog-header" style="background:linear-gradient(135deg,#1a1000,#2e2000)">
+            <img src="assets/images/YOUR_BLOG_6.jpg" alt="Jazz Night"
+              onerror="this.style.display='none'" style="position:absolute;inset:0">
+            🎷
+            <div class="blog-tag">Concert</div>
+          </div>
+          <div class="blog-body">
+            <p class="blog-date">October 2025</p>
+            <h3>Jazz Night at Botswana Craft — A Night to Remember</h3>
+            <p>Our jazz-themed evening blended classical training with Botswana's rich musical traditions for a truly unique cultural experience.</p>
+            <a href="#" class="blog-read" onclick="showToast('Blog opening...');return false">Read More →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="staff-divider" aria-hidden="true">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <line x1="0" y1="12" x2="1200" y2="12"></line>
+    <line x1="0" y1="24" x2="1200" y2="24"></line>
+    <line x1="0" y1="36" x2="1200" y2="36"></line>
+    <line x1="0" y1="48" x2="1200" y2="48"></line>
+    <text x="50%" y="46" text-anchor="middle" class="clef">𝄞</text>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════════
+     CONTACT & BOOKING
+══════════════════════════════════════ -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <p class="section-label">Get in Touch</p>
+        <h2 class="section-title">Contact & <em>Book Us</em></h2>
+        <p>Planning an event, corporate function, wedding, or cultural festival? We'd love to bring the magic of live orchestral music to your occasion.</p>
+
+        <div class="contact-detail">
+          <span class="contact-icon">📍</span>
+          <div><strong>Rehearsal location</strong><span>Thornhill Primary School, Thornhill Street, Badiri, Gaborone, Botswana</span></div>
+        </div>
+        <div class="contact-detail">
+          <span class="contact-icon">📞</span>
+          <div><strong>Phone</strong><span>+267 XXX XXXX</span></div>
+        </div>
+        <div class="contact-detail">
+          <span class="contact-icon">✉️</span>
+          <div><strong>Email</strong><span>info@gaboroneorchestra.bw</span></div>
+        </div>
+        <div class="contact-detail">
+          <span class="contact-icon">🕐</span>
+          <div><strong>Rehearsal Hours</strong><span>Tuesdays & Thursdays, 6:00 PM – 9:00 PM</span></div>
+        </div>
+
+        <!-- Leaflet map (rendered by js/script.js using data-lat / data-lng) -->
+        <div id="orchestraMap" class="orchestra-map"
+             data-lat="-24.6544447"
+             data-lng="25.9161463"
+             data-label="Gaborone Community Orchestra"></div>
+        <a class="map-directions" href="https://www.google.com/maps/dir/?api=1&destination=Thornhill+Primary+School%2C+Gaborone%2C+Botswana&destination_place_id=&travelmode=driving" target="_blank" rel="noopener">GET DIRECTIONS IN GOOGLE MAPS</a>
+
+        <div style="margin-top:28px;background:var(--panel);border-radius:12px;padding:20px;border:1px solid rgba(200,151,42,0.15)">
+          <p style="font-weight:700;color:var(--white);margin-bottom:7px;font-size:0.88rem">🎼 Booking Enquiries</p>
+          <p style="color:var(--muted);font-size:0.8rem;line-height:1.7">We perform at weddings, corporate events, school programmes, cultural festivals, and state occasions. Fill in the form and we'll respond within 48 hours.</p>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <p class="form-title">Send Us a Message</p>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="Your first name"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" id="lastName" placeholder="Your last name"></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="emailInput" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Phone Number</label><input type="tel" id="phoneInput" placeholder="+267 7XX XXXX"></div>
+        <div class="form-group">
+          <label>Reason for Contact</label>
+          <select id="reasonSelect">
+            <option value="">Select a reason…</option>
+            <option>Book the Orchestra for an Event</option>
+            <option>Membership / Audition Enquiry</option>
+            <option>Sponsorship / Partnership</option>
+            <option>General Enquiry</option>
+            <option>Media / Press</option>
+          </select>
+        </div>
+        <div class="form-group" id="eventDetailsGroup" style="display:none">
+          <label>Event Date & Details</label>
+          <input type="text" id="eventDate" placeholder="e.g. 15 March 2026 — Wedding Reception, 200 guests">
+        </div>
+        <div class="form-group"><label>Message</label><textarea id="messageInput" placeholder="Tell us about your enquiry…"></textarea></div>
+        <button class="btn-submit" onclick="submitForm()">Send Message</button>
+        <div class="form-success" id="formSuccess">✅ Message sent! We'll get back to you within 48 hours.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="staff-divider" aria-hidden="true">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <line x1="0" y1="12" x2="1200" y2="12"></line>
+    <line x1="0" y1="24" x2="1200" y2="24"></line>
+    <line x1="0" y1="36" x2="1200" y2="36"></line>
+    <line x1="0" y1="48" x2="1200" y2="48"></line>
+    <text x="50%" y="46" text-anchor="middle" class="clef">𝄞</text>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════════
+     DONATE
+══════════════════════════════════════ -->
+<section id="donate">
+  <div class="container">
+    <div class="donate-intro">
+      <p class="section-label">Support Us</p>
+      <h2 class="section-title">Help Us Keep<br><em>Music Alive</em></h2>
+      <p class="section-body">Your donation keeps our orchestra thriving — funding instruments, youth programmes, outreach concerts, and ensuring music stays free and accessible to all Batswana.</p>
+    </div>
+    <div class="donate-tiers">
+      <div class="tier-card" onclick="selectTier('50')"><div class="tier-amount">P50</div><div class="tier-name">Friend</div><div class="tier-desc">Covers sheet music for one rehearsal session.</div></div>
+      <div class="tier-card featured" onclick="selectTier('150')"><div class="tier-badge">Most Popular</div><div class="tier-amount">P150</div><div class="tier-name">Patron</div><div class="tier-desc">Funds instrument maintenance for a month.</div></div>
+      <div class="tier-card" onclick="selectTier('500')"><div class="tier-amount">P500</div><div class="tier-name">Benefactor</div><div class="tier-desc">Sponsors a young musician's term of tuition.</div></div>
+      <div class="tier-card" onclick="selectTier('1000')"><div class="tier-amount">P1,000</div><div class="tier-name">Champion</div><div class="tier-desc">Funds a free community concert for 500 people.</div></div>
+    </div>
+    <div class="donate-custom">
+      <h3>Choose Your Amount</h3>
+      <div class="amount-pills">
+        <button class="pill" onclick="setPill(this,'50')">P50</button>
+        <button class="pill active" onclick="setPill(this,'150')">P150</button>
+        <button class="pill" onclick="setPill(this,'500')">P500</button>
+        <button class="pill" onclick="setPill(this,'1000')">P1,000</button>
+        <button class="pill" onclick="setPill(this,'')">Custom</button>
+      </div>
+      <div class="form-group"><label>Amount (BWP)</label><input type="number" id="donateAmount" value="150" placeholder="Enter amount in Pula"></div>
+      <div class="form-group"><label>Your Name (optional)</label><input type="text" id="donorName" placeholder="Anonymous"></div>
+      <div class="form-group"><label>Message (optional)</label><textarea id="donorMessage" placeholder="Keep making beautiful music!" style="min-height:75px"></textarea></div>
+      <button class="btn-submit" onclick="processDonate()">♥ Donate Now</button>
+      <div class="payment-panel">
+        <h4>Ways to Give</h4>
+        <div class="payment-options" aria-label="Available payment methods">
+          <button type="button" class="payment-option active" onclick="choosePayment(this)">Bank transfer</button>
+          <button type="button" class="payment-option" onclick="choosePayment(this)">Orange Money</button>
+          <button type="button" class="payment-option" onclick="choosePayment(this)">Visa / Card</button>
+          <button type="button" class="payment-option" onclick="choosePayment(this)">MyZaka</button>
+          <button type="button" class="payment-option" onclick="choosePayment(this)">PayPal</button>
+        </div>
+        <div class="bank-details">
+          <strong>Bank transfer details</strong>
+          <span>Account name: Gaborone Community Orchestra</span>
+          <span>Bank: Add your bank name</span>
+          <span>Account number: Add your account number</span>
+          <span>Branch / reference: GCO Donation</span>
+        </div>
+        <p class="payment-note">Replace the placeholder bank details and connect each payment button to your verified merchant account before accepting live payments.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:12px">
+          <img class="brand-logo" src="assets/images/logo.png" alt="Gaborone Community Orchestra logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="emblem" style="display:none">G</div>
+          <span style="font-family:Arial,Helvetica,sans-serif;font-weight:800;color:var(--cream)">Gaborone Community Orchestra</span>
+        </div>
+        <p>Botswana's home for community orchestral music. Bringing people together through the universal language of music since 2025.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#membership">Members</a></li>
+          <li><a href="#watch">Watch & Listen</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Get Involved</h4>
+        <ul>
+          <li><a href="#membership">Join the Orchestra</a></li>
+          <li><a href="#register">Member registration</a></li>
+          <li><a href="#register">Audition application</a></li>
+          <li><a href="#donate" onclick="openDonateModal();return false">Donate</a></li>
+          <li><a href="#contact">Book Us</a></li>
+          <li><a href="#contact">Volunteer</a></li>
+          <li><a href="#contact">Partner With Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:info@gaboroneorchestra.bw">info@gaboroneorchestra.bw</a></li>
+          <li><a href="https://www.facebook.com/" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i> Facebook profile</a></li>
+          <li><a href="https://www.instagram.com/" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i> Instagram profile</a></li>
+          <li><a href="https://www.youtube.com/" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> YouTube channel</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Gaborone Community Orchestra. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="social-btn facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="social-btn instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="social-btn youtube" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener" class="social-btn tiktok" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════
+     DONATE MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="donateModal">
+  <div class="modal donation-modal">
+    <button class="modal-close" onclick="closeDonateModal()" aria-label="Close donation window">✕</button>
+    <p class="section-label">Secure giving</p>
+    <h2>Choose how to donate</h2>
+    <p>Select a method first. You will only enter payment details on the bank, mobile-money, or payment provider page.</p>
+    <div class="donation-method-grid">
+      <button class="donation-method active" type="button" data-method="bank" onclick="selectDonationMethod(this)"><strong>Bank transfer</strong><span>Direct to the orchestra account</span></button>
+      <button class="donation-method" type="button" data-method="orange" onclick="selectDonationMethod(this)"><strong>Orange Money</strong><span>Use your Orange Money wallet</span></button>
+      <button class="donation-method" type="button" data-method="my zaka" onclick="selectDonationMethod(this)"><strong>MyZaka</strong><span>Use your mobile wallet</span></button>
+      <button class="donation-method" type="button" data-method="card" onclick="selectDonationMethod(this)"><strong>Visa / Mastercard</strong><span>Secure hosted checkout</span></button>
+      <button class="donation-method" type="button" data-method="paypal" onclick="selectDonationMethod(this)"><strong>PayPal</strong><span>Pay with PayPal securely</span></button>
+    </div>
+    <div class="donation-details" id="donationDetails"></div>
+    <div class="form-group"><label for="donationAmountModal">Donation amount (BWP)</label><input id="donationAmountModal" type="number" min="1" placeholder="Enter amount in Pula" required></div>
+    <div class="form-group"><label for="donorEmailModal">Email for receipt</label><input id="donorEmailModal" type="email" placeholder="you@example.com" required></div>
+    <button class="btn-submit" id="donationAction" type="button" onclick="continueDonation()">Continue securely</button>
+    <small class="payment-note">Card details are never collected by this page. Replace the hosted checkout URLs in script.js with your verified merchant links before going live.</small>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MEMBERSHIP MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="memberModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="memberModalTitle">Join the Orchestra</h2>
+    <p>Complete this expression of interest and our membership coordinator will be in touch within 5 business days.</p>
+    <div class="form-group"><label for="memberName">Full Name</label><input id="memberName" type="text" placeholder="Your full name"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Age</label><input type="number" placeholder="e.g. 24"></div>
+      <div class="form-group"><label>Instrument</label><input type="text" placeholder="e.g. Violin"></div>
+    </div>
+    <div class="form-group"><label>Application Type</label>
+      <select id="applicationType"><option value="membership">Member registration</option><option value="audition">Audition application</option></select>
+    </div>
+    <div class="form-group"><label>Experience Level</label>
+      <select><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option></select>
+    </div>
+    <div class="form-group"><label for="memberEmail">Email</label><input id="memberEmail" type="email" placeholder="your@email.com"></div>
+    <div class="form-group">
+      <label for="memberPhoto">Profile photo (optional)</label>
+      <input type="file" id="memberPhoto" accept="image/png,image/jpeg,image/webp">
+      <small class="upload-help">Upload a clear head-and-shoulders photo, JPG, PNG, or WebP.</small>
+      <img id="memberPhotoPreview" class="member-photo-preview" alt="Selected profile preview" hidden>
+    </div>
+    <div class="form-group"><label>Audition / registration notes</label><textarea placeholder="Tell us about your goals, availability, or preferred audition piece"></textarea></div>
+    <button class="btn-submit" onclick="submitMembership()" style="margin-top:8px">Submit Application</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/script.js"></script>
+<!-- Start of Tawk.to Script -->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6ab56c6b2c323b344704c61a/1k3aav15v';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+Tawk_API.onLoad = function() {
+  Tawk_API.showWidget();
+  window.setInterval(function() { Tawk_API.showWidget(); }, 2000);
+};
+Tawk_API.onChatHidden = function() {
+  Tawk_API.showWidget();
+};
+</script>
+<!-- End of Tawk.to Script -->
+</body>
+</html>

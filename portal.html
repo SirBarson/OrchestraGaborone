@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gaborone Community Orchestra Management System (GCOMS)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============================================================
+       SCOPED PORTAL STYLES — centered, red & white theme
+       ============================================================ */
+    :root {
+      --gcoP-red: #C11B26;
+      --gcoP-red-light: #E8434A;
+      --gcoP-black: #0A0A0A;
+      --gcoP-panel: rgba(255, 255, 255, 0.05);
+      --gcoP-white: #FFFFFF;
+      --gcoP-muted: #D3D0CB;
+      --gcoP-line: rgba(255, 255, 255, 0.14);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; }
+
+    body.portal-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(150deg, rgba(5,9,20,.85) 0%, rgba(10,17,40,.85) 38%, rgba(26,8,16,.85) 72%, rgba(4,3,8,.9) 100%),
+    url('images/img.jfif') center center / cover no-repeat fixed;
+  background-attachment: fixed, fixed;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--gcoP-white);
+  padding: 40px 20px;
+}
+
+    /* Background glows */
+    .portal-glow {
+      position: fixed; z-index: 0; border-radius: 50%;
+      filter: blur(110px); opacity: 0.6; mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    .portal-glow.blob-blue {
+      width: 540px; height: 540px; top: -140px; left: -120px;
+      background: radial-gradient(circle, #2FA8FF 0%, transparent 70%);
+      animation: driftBlue 19s ease-in-out infinite alternate;
+    }
+    .portal-glow.blob-red {
+      width: 480px; height: 480px; bottom: -150px; right: -110px;
+      background: radial-gradient(circle, #FF2D6B 0%, transparent 70%);
+      animation: driftRed 23s ease-in-out infinite alternate;
+    }
+    .portal-glow.blob-violet {
+      width: 420px; height: 420px; top: 28%; left: 52%;
+      background: radial-gradient(circle, #8B5CFF 0%, transparent 70%);
+      animation: driftViolet 27s ease-in-out infinite alternate;
+    }
+    @keyframes driftBlue   { from{transform:translate(0,0) scale(1)} to{transform:translate(70px,50px) scale(1.18)} }
+    @keyframes driftRed    { from{transform:translate(0,0) scale(1)} to{transform:translate(-55px,-35px) scale(1.12)} }
+    @keyframes driftViolet { from{transform:translate(-50%,-50%) scale(1)} to{transform:translate(-50%,-50%) translate(35px,-45px) scale(1.22)} }
+    @media (prefers-reduced-motion: reduce) { .portal-glow { animation: none; } }
+
+    .portal-bg-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* Main container */
+    .portal-hub {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 880px; margin: 0 auto;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+    }
+    .portal-hub-inner {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 880px; margin: 0 auto;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+    }
+
+    /* Back link */
+    .portal-hub .portal-back {
+      display: inline-block; text-align: center;
+      color: var(--gcoP-muted); text-decoration: none;
+      font-size: 0.85rem; letter-spacing: 0.05em; font-weight: 500;
+      margin-bottom: 36px; transition: color 0.25s ease;
+    }
+    .portal-hub .portal-back:hover { color: var(--gcoP-red-light); }
+
+    /* Logo */
+    .portal-logo {
+      display: flex; justify-content: center; align-items: center;
+      margin-bottom: 24px;
+    }
+    .portal-logo img {
+      width: 100px; height: 100px; object-fit: contain;
+      border-radius: 50%; border: 3px solid var(--gcoP-red);
+      padding: 8px; background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 30px rgba(193, 27, 38, 0.35);
+    }
+    .portal-logo .logo-fallback {
+      width: 100px; height: 100px; border-radius: 50%;
+      border: 3px solid var(--gcoP-red);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255, 255, 255, 0.05); font-size: 2.5rem;
+      box-shadow: 0 8px 30px rgba(193, 27, 38, 0.35);
+    }
+
+    /* Header */
+    .portal-hub-head {
+      text-align: center; margin: 0 0 44px; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .portal-hub-head > * {
+      max-width: 1000px; margin-left: auto; margin-right: auto; text-align: center;
+    }
+    .portal-hub-head h1 {
+      font-size: clamp(1.1rem, 5.5vw, 2.6rem);
+      line-height: 1.4; margin: 0 0 14px;
+      font-weight: 900; letter-spacing: 0.02em;
+      text-transform: uppercase; text-align: center;
+      white-space: normal; word-break: break-word;
+    }
+    .word-white-red-glow {
+      color: var(--gcoP-white);
+      text-shadow: 0 0 8px rgba(232,67,74,.9), 0 0 20px rgba(232,67,74,.7), 0 0 40px rgba(193,27,38,.5);
+    }
+    .word-red-white-glow {
+      color: var(--gcoP-red-light);
+      text-shadow: 0 0 8px rgba(255,255,255,.9), 0 0 20px rgba(255,255,255,.7), 0 0 40px rgba(255,255,255,.45);
+    }
+    .portal-hub-head h1 .line { display: block; }
+
+    .portal-hub-kicker {
+      color: var(--gcoP-white);
+      letter-spacing: 0.18em; font-size: 0.9rem;
+      text-transform: uppercase; margin: 0 0 20px;
+      font-weight: 700; text-align: center;
+    }
+    .portal-hub-head p {
+      color: var(--gcoP-muted); max-width: 54ch;
+      margin: 0 auto; font-size: 1rem; line-height: 1.6; text-align: center;
+    }
+
+    /* Role toggle */
+    .role-toggle {
+      position: relative; display: grid; grid-template-columns: 1fr 1fr;
+      width: 100%; max-width: 420px; margin: 0 auto 34px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--gcoP-line);
+      border-radius: 999px; padding: 6px;
+      touch-action: pan-y; user-select: none;
+    }
+    .role-toggle-thumb {
+      position: absolute; top: 6px; left: 6px;
+      width: calc(50% - 6px); height: calc(100% - 12px);
+      background: linear-gradient(135deg, var(--gcoP-red), var(--gcoP-red-light));
+      border-radius: 999px;
+      transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+      box-shadow: 0 8px 22px rgba(193, 27, 38, 0.45);
+    }
+    .role-toggle[data-selected="admin"] .role-toggle-thumb { transform: translateX(100%); }
+    .role-toggle-btn {
+      position: relative; z-index: 1;
+      background: none; border: none; padding: 13px 10px;
+      font-size: 0.92rem; font-weight: 700;
+      color: var(--gcoP-muted); cursor: pointer;
+      border-radius: 999px; display: flex;
+      align-items: center; justify-content: center; gap: 8px;
+      transition: color 0.25s ease; font-family: inherit;
+    }
+    .role-toggle-btn[aria-pressed="true"] { color: var(--gcoP-white); }
+    .role-toggle-hint {
+      text-align: center; font-size: 0.78rem;
+      color: var(--gcoP-muted); margin: -22px 0 30px;
+    }
+
+    /* Form card */
+    .portal-hub-form {
+      width: 100%; max-width: 420px; margin: 0 auto;
+      background: var(--gcoP-panel);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--gcoP-line);
+      border-radius: 16px; padding: 34px 30px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); text-align: left;
+    }
+    .portal-hub-form .form-group { margin-bottom: 18px; text-align: left; }
+    .portal-hub-form label {
+      display: block; font-size: 0.85rem; color: var(--gcoP-muted);
+      margin-bottom: 7px; font-weight: 600; text-align: left;
+    }
+    .portal-hub-form input {
+      width: 100%; box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--gcoP-line); border-radius: 9px;
+      padding: 13px 15px; color: var(--gcoP-white);
+      font-size: 1rem; text-align: left; font-family: inherit;
+    }
+    .portal-hub-form input::placeholder { color: rgba(255, 255, 255, 0.4); }
+    .portal-hub-form input:focus {
+      outline: none; border-color: var(--gcoP-red-light);
+      box-shadow: 0 0 0 3px rgba(193, 27, 38, 0.25);
+    }
+    .portal-hub-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gcoP-red), var(--gcoP-red-light));
+      color: var(--gcoP-white); border: none; border-radius: 9px;
+      padding: 14px; font-weight: 800; letter-spacing: 0.05em;
+      font-size: 0.95rem; cursor: pointer;
+      transition: filter 0.2s ease, transform 0.15s ease;
+      font-family: inherit; text-align: center;
+    }
+    .portal-hub-submit:hover { filter: brightness(1.12); }
+    .portal-hub-submit:active { transform: scale(0.98); }
+    .portal-hub-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .portal-hub-message {
+      min-height: 20px; font-size: 0.88rem; margin-top: 14px;
+      font-weight: 600; color: var(--gcoP-white); text-align: center;
+    }
+    .portal-hub-message.is-error { color: #FF8B85; }
+    .portal-hub-message.is-ok { color: #7EE29A; }
+
+    .portal-hub-links {
+      display: flex; justify-content: center;
+      margin-top: 20px; flex-wrap: wrap; gap: 24px;
+    }
+    .portal-hub-links a {
+      color: var(--gcoP-muted); font-size: 0.85rem;
+      text-decoration: none; font-weight: 600;
+      transition: color 0.25s ease;
+    }
+    .portal-hub-links a:hover { color: var(--gcoP-red-light); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .role-toggle-thumb, .portal-hub-submit { transition: none; }
+    }
+    @media (max-width: 600px) {
+      body.portal-page { padding: 24px 16px; }
+      .portal-hub-form { padding: 24px 18px; max-width: 100%; }
+      .portal-hub-head h1 { font-size: 1.2rem; white-space: normal; line-height: 1.5; }
+      .portal-hub-head { margin-bottom: 32px; }
+      .role-toggle { max-width: 100%; }
+      .portal-logo img, .portal-logo .logo-fallback { width: 80px; height: 80px; }
+    }
+  </style>
+</head>
+<body class="portal-page">
+  <div class="portal-glow blob-blue" aria-hidden="true"></div>
+  <div class="portal-glow blob-red" aria-hidden="true"></div>
+  <div class="portal-glow blob-violet" aria-hidden="true"></div>
+  <canvas id="portalBg" class="portal-bg-canvas" aria-hidden="true"></canvas>
+
+  <div class="portal-hub">
+    <div class="portal-hub-inner">
+      <a class="portal-back" href="index.html">← BACK TO WEBSITE</a>
+
+<div class="portal-hub-head">
+  <h1 class="portal-hub-kicker" style="
+      font-size: 3rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: 0.15em;
+      margin-bottom: 20px;
+      text-transform: uppercase;">
+    THE ORCHESTRA HUB
+  </h1>
+</div>
+
+      <div class="role-toggle" id="roleToggle" data-selected="member">
+        <div class="role-toggle-thumb"></div>
+        <button type="button" class="role-toggle-btn" data-role="member" aria-pressed="true">🎻 Member</button>
+        <button type="button" class="role-toggle-btn" data-role="admin" aria-pressed="false">🛡️ Admin</button>
+      </div>
+      <p class="role-toggle-hint" id="roleHint">Signing in as: Member</p>
+
+      <div class="portal-hub-form">
+        <form id="portalLoginForm" novalidate>
+          <div class="form-group">
+            <label for="portalIdentifier">Username or email</label>
+            <input id="portalIdentifier" type="text" required autocomplete="username" placeholder="Valentine or you@example.com">
+          </div>
+          <div class="form-group">
+            <label for="portalPassword">Password</label>
+            <input id="portalPassword" type="password" required autocomplete="current-password">
+          </div>
+          <button class="portal-hub-submit" type="submit" id="portalSubmit">SIGN IN</button>
+          <p class="portal-hub-message" id="portalMessage" role="status"></p>
+        </form>
+        <div class="portal-hub-links">
+          <a href="reset-password.html">Forgot password?</a>
+          <a href="register.html">Apply for membership</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       Ambient canvas background
+       ============================================================ */
+    (function initPortalBg() {
+      const canvas = document.getElementById('portalBg');
+      const ctx = canvas.getContext('2d');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let w, h, particles = [];
+      const notes = ['♪', '♫', '♩'];
+
+      function resize() {
+        w = canvas.width = canvas.offsetWidth;
+        h = canvas.height = canvas.offsetHeight;
+      }
+      function initParticles() {
+        const count = w < 640 ? 10 : 18;
+        particles = Array.from({ length: count }, () => ({
+          x: Math.random() * w, y: Math.random() * h,
+          r: 10 + Math.random() * 22,
+          vy: -(0.12 + Math.random() * 0.22),
+          vx: (Math.random() - 0.5) * 0.12,
+          drift: Math.random() * Math.PI * 2,
+          isNote: Math.random() < 0.35,
+          note: notes[Math.floor(Math.random() * notes.length)],
+          hue: ['90,140,255', '220,50,60', '150,90,255'][Math.floor(Math.random() * 3)],
+          alpha: 0.10 + Math.random() * 0.18
+        }));
+      }
+      function frame() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+          p.y += p.vy;
+          p.drift += 0.01;
+          p.x += p.vx + Math.sin(p.drift) * 0.15;
+          if (p.y < -30) { p.y = h + 30; p.x = Math.random() * w; }
+          if (p.x < -30) p.x = w + 30;
+          if (p.x > w + 30) p.x = -30;
+          if (p.isNote) {
+            ctx.font = `${p.r}px serif`;
+            ctx.fillStyle = `rgba(${p.hue},${p.alpha})`;
+            ctx.fillText(p.note, p.x, p.y);
+          } else {
+            const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+            g.addColorStop(0, `rgba(${p.hue},${p.alpha})`);
+            g.addColorStop(1, `rgba(${p.hue},0)`);
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+          }
+        });
+        requestAnimationFrame(frame);
+      }
+      window.addEventListener('resize', () => { resize(); initParticles(); });
+      resize(); initParticles();
+      if (!reduceMotion) frame();
+    })();
+  </script>
+
+  <script>
+    /* ============================================================
+       LOGIN FORM + ROLE TOGGLE
+       ============================================================ */
+    const API_BASE = location.protocol === 'file:' ? 'http://127.0.0.1:3000' : '';
+
+    const portalLoginForm  = document.getElementById('portalLoginForm');
+    const portalMessage    = document.getElementById('portalMessage');
+    const portalSubmit     = document.getElementById('portalSubmit');
+    const roleToggle       = document.getElementById('roleToggle');
+    const roleHint         = document.getElementById('roleHint');
+    const roleButtons      = roleToggle.querySelectorAll('.role-toggle-btn');
+    let selectedRole       = 'member';
+
+    function setMessage(text, kind) {
+      portalMessage.textContent = text || '';
+      portalMessage.classList.remove('is-error', 'is-ok');
+      if (kind) portalMessage.classList.add(kind);
+    }
+
+    function selectRole(role) {
+      selectedRole = role;
+      roleToggle.dataset.selected = role;
+      roleButtons.forEach(btn =>
+        btn.setAttribute('aria-pressed', String(btn.dataset.role === role))
+      );
+      roleHint.textContent = `Signing in as: ${role === 'admin' ? 'Admin' : 'Member'}`;
+    }
+
+    roleButtons.forEach(btn =>
+      btn.addEventListener('click', () => selectRole(btn.dataset.role))
+    );
+
+    // Swipe gesture
+    let touchStartX = null;
+    roleToggle.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    roleToggle.addEventListener('touchend', e => {
+      if (touchStartX === null) return;
+      const delta = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(delta) > 40) selectRole(delta < 0 ? 'admin' : 'member');
+      touchStartX = null;
+    }, { passive: true });
+
+    /* ============================================================
+       SUBMIT HANDLER — with role validation
+       ============================================================ */
+    portalLoginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const identifier = document.getElementById('portalIdentifier').value.trim();
+      const password   = document.getElementById('portalPassword').value;
+
+      if (!identifier || !password) {
+        setMessage('Please enter your username/email and password.', 'is-error');
+        return;
+      }
+
+      portalSubmit.disabled = true;
+      setMessage('Checking your details against the GCO database…');
+
+      // Safety timeout — re-enable button after 15s
+      const safety = setTimeout(() => {
+        portalSubmit.disabled = false;
+        setMessage('The request is taking too long. Please try again.', 'is-error');
+      }, 15000);
+
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: identifier, password })
+        });
+        const data = await response.json().catch(() => ({}));
+        clearTimeout(safety);
+
+        if (!response.ok) throw new Error(data.error || 'Unable to sign in.');
+
+        /* ══════════════════════════════════════════════════════
+           🔒 ROLE VALIDATION
+           Reject the sign-in if the account role doesn't match
+           the selected tab. User must pick the correct tab.
+           ══════════════════════════════════════════════════════ */
+        if (selectedRole !== data.role) {
+
+          // Admin tried to sign in via the Member tab
+          if (selectedRole === 'member' && data.role === 'admin') {
+            setMessage(
+              '❌ You are not a member. This is an Admin account — please switch the toggle to "Admin" and try again.',
+              'is-error'
+            );
+            portalSubmit.disabled = false;
+            return;
+          }
+
+          // Member tried to sign in via the Admin tab
+          if (selectedRole === 'admin' && data.role === 'member') {
+            setMessage(
+              '❌ You are not an admin. This is a Member account — please switch the toggle to "Member" and try again.',
+              'is-error'
+            );
+            portalSubmit.disabled = false;
+            return;
+          }
+
+          // Safety fallback (shouldn't happen)
+          setMessage(
+            `This account is registered as a ${data.role}. Please select the correct tab.`,
+            'is-error'
+          );
+          portalSubmit.disabled = false;
+          return;
+        }
+
+        /* ══════════════════════════════════════════════════════
+           ✅ ROLE MATCHES — proceed with redirect
+           ══════════════════════════════════════════════════════ */
+        setMessage(
+          `✓ Verified as ${data.role === 'admin' ? 'Admin' : 'Member'}. Opening your dashboard…`,
+          'is-ok'
+        );
+
+        sessionStorage.setItem('gcoSession', data.token);
+        sessionStorage.setItem('gcoLastRole', data.role);
+
+        const target = data.role === 'admin'
+          ? 'admin-portal.html#dashboard'
+          : 'member-portal.html#dashboard';
+
+        setTimeout(() => window.location.assign(target), 500);
+
+      } catch (error) {
+        clearTimeout(safety);
+
+        /* ----- Offline demo fallback ----- */
+        if (location.protocol === 'file:' && error.name === 'TypeError') {
+          const isAdmin =
+            (identifier.toLowerCase() === 'valentine' ||
+             identifier.toLowerCase() === 'valentinebarson@gmail.com') &&
+            password === 'Tadiwa@2763';
+          const isDemoMember =
+            identifier.toLowerCase() === 'member@example.com' &&
+            password === 'Member@123';
+
+          // Validate role even in offline mode
+          if (isAdmin && selectedRole !== 'admin') {
+            setMessage('❌ You are not a member. This is an Admin account — switch the toggle to "Admin".', 'is-error');
+            portalSubmit.disabled = false;
+            return;
+          }
+          if (isDemoMember && selectedRole !== 'member') {
+            setMessage('❌ You are not an admin. This is a Member account — switch the toggle to "Member".', 'is-error');
+            portalSubmit.disabled = false;
+            return;
+          }
+
+          if (isAdmin || isDemoMember) {
+            const role = isAdmin ? 'admin' : 'member';
+            sessionStorage.setItem('gcoOfflineRole', role);
+            window.location.assign(
+              isAdmin ? 'admin-portal.html#offline' : 'member-portal.html#offline'
+            );
+            return;
+          }
+
+          setMessage(
+            'Offline demo mode only supports two accounts. Start the Node server (npm start) for real database sign-in.',
+            'is-error'
+          );
+          portalSubmit.disabled = false;
+          return;
+        }
+
+        setMessage(error.message || 'Unable to sign in.', 'is-error');
+        portalSubmit.disabled = false;
+      }
+    });
+  </script>
+
+  <!-- Start of Tawk.to Script -->
+  <script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    (function () {
+      var s1 = document.createElement("script"),
+        s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/6ab56c6b2c323b344704c61a/1k3aav15v';
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    })();
+    Tawk_API.onLoad = function () {
+      Tawk_API.showWidget();
+      window.setInterval(function () { Tawk_API.showWidget(); }, 2000);
+    };
+    Tawk_API.onChatHidden = function () { Tawk_API.showWidget(); };
+  </script>
+  <!-- End of Tawk.to Script -->
+</body>
+</html>

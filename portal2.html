@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Members Dashboard Portal | Gaborone Community Orchestra</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="portal-page">
+  <main class="portal-page-shell">
+    <a class="portal-back" href="index.html">← BACK TO GCO WEBSITE</a>
+    <section class="portal-auth-card">
+      <p class="section-label">GCO CONNECT</p>
+      <h1 class="section-title">Secure <em>Sign In</em></h1>
+      <p class="section-body">Use your username or email and password. GCO will open the correct member or admin dashboard automatically.</p>
+      <form class="portal-form" id="portalLoginForm">
+        <div class="form-group">
+          <label for="portalIdentifier">Username or email</label>
+          <input id="portalIdentifier" type="text" required autocomplete="username" placeholder="Valentine or you@example.com">
+        </div>
+        <div class="form-group">
+          <label for="portalPassword">Password</label>
+          <input id="portalPassword" type="password" required autocomplete="current-password">
+        </div>
+        <button class="btn-primary" type="submit">SIGN IN</button>
+        <p class="portal-message" id="portalMessage" role="status"></p>
+      </form>
+      <div class="portal-form-links">
+        <a class="portal-link" href="reset-password.html">FORGOT PASSWORD?</a>
+        <a class="portal-link" href="register.html">APPLY FOR MEMBERSHIP</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = location.protocol === 'file:' ? 'http://127.0.0.1:3000' : '';
+    const portalLoginForm = document.getElementById('portalLoginForm');
+    const portalMessage = document.getElementById('portalMessage');
+
+    portalLoginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const identifier = document.getElementById('portalIdentifier').value.trim();
+      const password = document.getElementById('portalPassword').value;
+      portalMessage.textContent = 'Signing in...';
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: identifier,
+            password
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Unable to sign in.');
+        sessionStorage.setItem('gcoSession', data.token);
+        window.location.assign(data.role === 'admin' ? 'admin-portal.html#dashboard' : 'member-portal.html#dashboard');
+      } catch (error) {
+        if (location.protocol === 'file:' && error.name === 'TypeError') {
+          const isAdmin = (identifier.toLowerCase() === 'valentine' || identifier.toLowerCase() === 'valentinebarson@gmail.com')
+            && password === 'Tadiwa@2763';
+          const isDemoMember = identifier.toLowerCase() === 'member@example.com' && password === 'Member@123';
+          if (isAdmin || isDemoMember) {
+            sessionStorage.setItem('gcoOfflineRole', isAdmin ? 'admin' : 'member');
+            window.location.assign(isAdmin ? 'admin-portal.html#offline' : 'member-portal.html#offline');
+            return;
+          }
+          portalMessage.textContent = 'Offline login only supports the demo accounts. Use the Node server for database validation.';
+          return;
+        }
+        portalMessage.textContent = error.message || 'Unable to sign in.';
+      }
+    });
+  </script>
+
+  <!-- Start of Tawk.to Script -->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;s1.src='https://embed.tawk.to/6ab56c6b2c323b344704c61a/1k3aav15v';
+  s1.charset='UTF-8';s1.setAttribute('crossorigin','*');s0.parentNode.insertBefore(s1,s0);
+  })();
+  Tawk_API.onLoad = function(){ Tawk_API.showWidget(); window.setInterval(function(){ Tawk_API.showWidget(); },2000); };
+  Tawk_API.onChatHidden = function(){ Tawk_API.showWidget(); };
+  </script>
+  <!-- End of Tawk.to Script -->
+</body>
+</html>

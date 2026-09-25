@@ -1,0 +1,3678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GCPMS Admin Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   GCO ADMIN PORTAL — bold, clear, DBMS-style
+   ═══════════════════════════════════════════════════════════════ */
+
+*,*::before,*::after { box-sizing: border-box; }
+
+/* ─── 1. TOTAL RESET ─── */
+html,
+html body.admin-body,
+body.admin-body,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  background: #0A1128 !important;
+}
+
+body.admin-body {
+  color: #F5F5F7;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* Hide any site chrome */
+body.admin-body > nav,
+body.admin-body > header,
+body.admin-body > footer,
+body.admin-body > .navbar,
+body.admin-body > .site-nav,
+body.admin-body > .topnav,
+body.admin-body > .mobile-menu,
+body.admin-body > .hamburger,
+body.admin-body > .nav-links,
+body.admin-body > #mobileMenu {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -1 !important;
+}
+
+body.admin-body > *:not(.ap-sidebar):not(.ap-main):not(.ap-modal-mask):not(.ap-toast):not(.ap-overlay) {
+  display: none !important;
+}
+
+body.admin-body::before,
+body.admin-body::after { content: none !important; display: none !important; }
+
+body.admin-body > hr,
+body.admin-body > .divider,
+body.admin-body > .divider-top,
+body.admin-body > .staff-divider {
+  display: none !important;
+}
+
+/* ─── 2. LAYOUT ─── */
+.ap-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: linear-gradient(180deg, #050914 0%, #0A1128 60%, #1a0810 100%);
+  border-right: 2px solid rgba(232,67,74,.25);
+  border-top: 0 !important;
+  padding: 20px 14px 24px;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform .28s ease;
+}
+.ap-sidebar::-webkit-scrollbar { width: 6px; }
+.ap-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(232,67,74,.5);
+  border-radius: 3px;
+}
+
+.ap-sidebar nav,
+.ap-sidebar > nav {
+  display: contents !important;
+  position: static !important;
+  height: auto !important;
+  width: auto !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.ap-main {
+  margin-left: 260px;
+  min-height: 100vh;
+  padding: 26px 32px 80px;
+  overflow-x: hidden;
+  width: calc(100% - 260px);
+}
+
+/* ─── 3. BRAND ─── */
+.ap-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 6px 8px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: 15px;
+  color: #fff;
+}
+.ap-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #E8434A;
+  object-fit: cover;
+  background: #111;
+  flex-shrink: 0;
+}
+
+/* ─── 4. NAV MENU ─── */
+.ap-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ap-nav li { margin: 0; padding: 0; }
+.ap-nav button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: #E5E5EA;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background .18s, color .18s, transform .18s;
+  font-family: inherit;
+  line-height: 1.35;
+  letter-spacing: .01em;
+}
+.ap-nav button:hover {
+  background: rgba(232,67,74,.15);
+  color: #fff;
+  transform: translateX(2px);
+}
+.ap-nav button.active {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(193,27,38,.45);
+  font-weight: 800;
+}
+.ap-nav .ic {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ─── 5. TOPBAR ─── */
+.ap-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 28px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid rgba(232,67,74,.18);
+  flex-wrap: wrap;
+}
+.ap-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+.ap-topbar h1 {
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: -.01em;
+  color: #fff;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ap-topbar h1 em {
+  color: #E8434A;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.ap-menu-toggle {
+  display: none;
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.18);
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: .18s;
+}
+.ap-menu-toggle:hover {
+  background: rgba(232,67,74,.2);
+  border-color: #E8434A;
+}
+
+/* ─── 6. USER PILL ─── */
+.ap-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.14);
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.ap-user img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #E8434A;
+  flex-shrink: 0;
+}
+.ap-user .meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+.ap-user .meta strong {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.ap-user .meta small {
+  font-size: 11px;
+  color: #B8B5B0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.ap-user button {
+  background: none;
+  border: 1.5px solid #E8434A;
+  color: #E8434A;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  cursor: pointer;
+  font-family: inherit;
+  transition: .18s;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.ap-user button:hover {
+  background: #E8434A;
+  color: #fff;
+}
+
+/* ─── 7. OVERLAY ─── */
+.ap-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity .28s ease;
+  pointer-events: none;
+}
+.ap-overlay.show { opacity: 1; pointer-events: auto; }
+
+/* ─── 8. PANELS ─── */
+.ap-panel { display: none; animation: apFadeIn .25s ease; }
+.ap-panel.active { display: block; }
+@keyframes apFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ─── 9. CARDS ─── */
+.ap-card {
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 22px;
+}
+.ap-card h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -.005em;
+}
+.ap-card .sub {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+.ap-card .kicker {
+  color: #E8434A;
+  font-size: 11.5px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* ─── 10. METRICS ─── */
+.ap-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.ap-metric {
+  background: linear-gradient(140deg, rgba(232,67,74,.16), rgba(255,255,255,.03));
+  border: 1.5px solid rgba(232,67,74,.32);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.ap-metric span {
+  color: #C9C6C0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.ap-metric strong {
+  display: block;
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  margin: 8px 0 4px;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.ap-metric small {
+  color: #7EE29A;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.ap-metric.warn small { color: #FFB020; }
+.ap-metric.bad small  { color: #FF8B85; }
+.ap-metric.blue small { color: #7AB8FF; }
+.ap-metrics.compact .ap-metric strong { font-size: 24px; }
+.ap-metrics.compact .ap-metric { padding: 15px 16px; }
+
+/* ─── 11. CHARTS ─── */
+.ap-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.ap-pie-wrap {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.ap-pie {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(#E8434A 0 40%, #7EE29A 40% 68%, #7AB8FF 68% 85%, #FFB020 85% 100%);
+  box-shadow: 0 0 0 8px rgba(255,255,255,.04), 0 12px 36px rgba(0,0,0,.45);
+  position: relative;
+}
+.ap-pie::after {
+  content: '';
+  position: absolute;
+  inset: 26px;
+  border-radius: 50%;
+  background: #0A1128;
+}
+.ap-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 140px;
+}
+.ap-legend .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+.ap-legend .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.ap-legend .val {
+  margin-left: auto;
+  color: #fff;
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.ap-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 180px;
+  padding: 14px 0;
+}
+.ap-bar-chart .bar {
+  flex: 1;
+  background: linear-gradient(180deg, #E8434A, #C11B26);
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  min-height: 8px;
+  transition: filter .2s;
+}
+.ap-bar-chart .bar:hover { filter: brightness(1.25); }
+.ap-bar-chart .bar::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #C9C6C0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ap-bar-chart .bar span {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.ap-hbar { display: flex; flex-direction: column; gap: 14px; }
+.ap-hbar .row {
+  display: grid;
+  grid-template-columns: 100px 1fr 50px;
+  gap: 12px;
+  align-items: center;
+}
+.ap-hbar .row span.lbl {
+  font-size: 13.5px;
+  color: #E5E5EA;
+  font-weight: 700;
+}
+.ap-hbar .row .track {
+  height: 11px;
+  background: rgba(255,255,255,.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ap-hbar .row .track .fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #C11B26, #E8434A);
+  transition: width .6s ease;
+}
+.ap-hbar .row .val {
+  font-size: 13.5px;
+  color: #fff;
+  font-weight: 900;
+  text-align: right;
+}
+
+.ap-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.ap-donut {
+  width: 160px;
+  height: 160px;
+  position: relative;
+  flex-shrink: 0;
+}
+.ap-donut svg { transform: rotate(-90deg); width: 160px; height: 160px; }
+.ap-donut .center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ap-donut .center strong {
+  font-size: 26px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.ap-donut .center small {
+  font-size: 11px;
+  color: #C9C6C0;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* ─── 12. TABLES ─── */
+.ap-table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255,255,255,.1);
+}
+.ap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 720px;
+}
+.ap-table th {
+  text-align: left;
+  padding: 14px 14px;
+  color: #E8434A;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-weight: 900;
+  border-bottom: 2px solid rgba(232,67,74,.35);
+  background: rgba(232,67,74,.06);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.ap-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  vertical-align: middle;
+  color: #F5F5F7;
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.ap-table tr:hover td {
+  background: rgba(232,67,74,.05);
+}
+.ap-table img.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(232,67,74,.6);
+}
+.ap-table code {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 12px;
+  background: rgba(0,0,0,.4);
+  padding: 3px 8px;
+  border-radius: 5px;
+  color: #7AB8FF;
+  font-weight: 700;
+}
+
+/* ─── 13. TAGS ─── */
+.ap-tag {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ap-tag.pending  { background: rgba(255,176,32,.22); color: #FFC755; }
+.ap-tag.approved { background: rgba(126,226,154,.22); color: #7EE29A; }
+.ap-tag.rejected { background: rgba(255,139,133,.22); color: #FF8B85; }
+.ap-tag.admin    { background: rgba(122,184,255,.25); color: #7AB8FF; }
+.ap-tag.member   { background: rgba(232,67,74,.22); color: #FF6B77; }
+.ap-tag.new      { background: rgba(232,67,74,.22); color: #FF6B77; }
+.ap-tag.reviewed { background: rgba(122,184,255,.22); color: #7AB8FF; }
+.ap-tag.planned  { background: rgba(255,176,32,.22); color: #FFC755; }
+.ap-tag.done     { background: rgba(126,226,154,.22); color: #7EE29A; }
+.ap-tag.declined { background: rgba(255,139,133,.22); color: #FF8B85; }
+.ap-tag.anon     { background: rgba(150,90,255,.22); color: #B69BFF; }
+
+/* ─── 14. BUTTONS ─── */
+.ap-btn {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  border: 0;
+  padding: 11px 20px;
+  border-radius: 9px;
+  font-weight: 900;
+  font-size: 12.5px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: .18s;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.ap-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.ap-btn:active { transform: translateY(0); }
+.ap-btn.small { padding: 7px 13px; font-size: 11px; }
+.ap-btn.ghost {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #E5E5EA;
+}
+.ap-btn.ghost:hover { border-color: #E8434A; color: #E8434A; }
+.ap-btn.danger {
+  background: linear-gradient(135deg, #7a0f18, #C11B26);
+}
+.ap-btn.blue {
+  background: linear-gradient(135deg, #0b4b8a, #7AB8FF);
+  color: #04223f;
+}
+
+/* ─── 15. FORMS ─── */
+.ap-form { display: grid; gap: 16px; }
+.ap-form .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.ap-form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  color: #E5E5EA;
+  margin-bottom: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.ap-form input,
+.ap-form select,
+.ap-form textarea {
+  width: 100%;
+  background: rgba(0,0,0,.4);
+  border: 1.5px solid rgba(255,255,255,.18);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.ap-form textarea { min-height: 100px; resize: vertical; }
+.ap-form input:focus,
+.ap-form select:focus,
+.ap-form textarea:focus {
+  outline: none;
+  border-color: #E8434A;
+  box-shadow: 0 0 0 4px rgba(232,67,74,.22);
+  background: rgba(0,0,0,.5);
+}
+.ap-form input::placeholder,
+.ap-form textarea::placeholder {
+  color: rgba(255,255,255,.4);
+  font-weight: 500;
+}
+.ap-form .actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.ap-form .hint {
+  display: block;
+  font-size: 12px;
+  color: #A5A29D;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* ─── 16. MODAL ─── */
+.ap-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.ap-modal-mask.show { display: flex; }
+.ap-modal-box {
+  background: #0f1830;
+  border: 1.5px solid rgba(232,67,74,.5);
+  border-radius: 18px;
+  padding: 28px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 40px 100px rgba(0,0,0,.7);
+}
+.ap-modal-box h3 {
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.01em;
+}
+.ap-modal-box .sub {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+/* ─── 17. TOAST ─── */
+.ap-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f1830;
+  color: #fff;
+  border-left: 5px solid #E8434A;
+  padding: 16px 22px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 700;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  z-index: 2000;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: .25s;
+  max-width: calc(100vw - 48px);
+}
+.ap-toast.show { transform: none; opacity: 1; }
+.ap-toast.ok { border-color: #7EE29A; }
+.ap-toast.err { border-color: #FF8B85; }
+
+/* ─── 18. LOG STREAM ─── */
+.ap-log-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+.ap-log-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.04);
+  border-radius: 11px;
+  border-left: 4px solid #E8434A;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.ap-log-item.member  { border-color: #FFB020; }
+.ap-log-item.admin   { border-color: #7AB8FF; }
+.ap-log-item.system  { border-color: #B69BFF; }
+.ap-log-item.success { border-color: #7EE29A; }
+.ap-log-item.danger  { border-color: #FF8B85; }
+.ap-log-item .icon {
+  font-size: 1.15rem;
+  width: 30px;
+  text-align: center;
+}
+.ap-log-item .body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.ap-log-item .body strong {
+  font-size: 13.5px;
+  color: #fff;
+  font-weight: 700;
+  word-break: break-word;
+}
+.ap-log-item .body small {
+  font-size: 11.5px;
+  color: #A5A29D;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.ap-log-item time {
+  font-size: 11.5px;
+  color: #7AB8FF;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ap-log-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.ap-log-filters button {
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.15);
+  color: #E5E5EA;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: .15s;
+}
+.ap-log-filters button:hover {
+  border-color: #E8434A;
+  color: #E8434A;
+}
+.ap-log-filters button.active {
+  background: #E8434A;
+  color: #fff;
+  border-color: #E8434A;
+}
+
+/* ─── 19. EMPTY + QR ─── */
+.ap-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #C9C6C0;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px dashed rgba(255,255,255,.18);
+  border-radius: 14px;
+}
+.ap-qr-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  color: #000;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 14px;
+}
+.ap-qr-preview canvas {
+  width: 180px;
+  height: 180px;
+}
+.ap-qr-preview small {
+  font-size: 12px;
+  color: #444;
+  font-weight: 600;
+}
+
+/* ─── 20. DBMS VIEW ─── */
+.ap-db-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  align-items: center;
+}
+.ap-db-toolbar select,
+.ap-db-toolbar input {
+  background: rgba(0,0,0,.4);
+  border: 1.5px solid rgba(255,255,255,.18);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.ap-db-toolbar input { flex: 1; min-width: 180px; }
+.ap-db-toolbar select:focus,
+.ap-db-toolbar input:focus {
+  outline: none;
+  border-color: #E8434A;
+  box-shadow: 0 0 0 4px rgba(232,67,74,.22);
+}
+.ap-db-count {
+  font-size: 13px;
+  color: #C9C6C0;
+  font-weight: 700;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.05);
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,.1);
+}
+.ap-db-count strong { color: #E8434A; font-weight: 900; }
+
+/* ─── 21. RESPONSIVE ─── */
+@media (max-width: 1000px) {
+  .ap-chart-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .ap-sidebar {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 40px rgba(0,0,0,.6);
+    width: 280px;
+    max-width: 85vw;
+  }
+  .ap-sidebar.open { transform: translateX(0); }
+  .ap-overlay { display: block; }
+  .ap-main {
+    margin-left: 0;
+    width: 100%;
+    padding: 18px 16px 60px;
+  }
+  .ap-menu-toggle { display: flex; }
+  .ap-topbar h1 { font-size: 20px; }
+  .ap-user .meta strong { max-width: 100px; }
+  .ap-user .meta small  { font-size: 10px; }
+  .ap-user button       { padding: 6px 10px; font-size: 10px; }
+  .ap-metrics {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .ap-metric strong { font-size: 26px; }
+  .ap-form .row { grid-template-columns: 1fr; }
+  .ap-hbar .row { grid-template-columns: 90px 1fr 44px; }
+  .ap-modal-box { padding: 22px; }
+  .ap-toast {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+  .ap-table { min-width: 620px; font-size: 13px; }
+}
+
+@media (max-width: 420px) {
+  .ap-topbar { gap: 10px; }
+  .ap-user { padding: 5px 10px 5px 5px; gap: 8px; }
+  .ap-user img { width: 34px; height: 34px; }
+  .ap-user .meta { display: none; }
+  .ap-user button { font-size: 10px; padding: 6px 9px; }
+  .ap-menu-toggle { width: 40px; height: 40px; font-size: 1.2rem; }
+  .ap-metrics { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ap-metric { padding: 14px; }
+  .ap-metric strong { font-size: 22px; }
+  .ap-metric span { font-size: 11px; }
+  .ap-pie { width: 140px; height: 140px; }
+  .ap-bar-chart { height: 140px; }
+  .ap-donut, .ap-donut svg { width: 130px; height: 130px; }
+  .ap-donut .center strong { font-size: 20px; }
+  .ap-topbar h1 { font-size: 17px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART LAYOUTS (line, gauge, heatmap)
+   ═══════════════════════════════════════════════════════════════ */
+
+.ap-gauge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ap-gauge { position: relative; flex-shrink: 0; }
+.ap-gauge svg { display: block; }
+.ap-gauge-value {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.ap-gauge-value strong {
+  display: block;
+  font-size: 30px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.ap-gauge-value small {
+  font-size: 11px;
+  color: #C9C6C0;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 800;
+}
+.ap-gauge-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 160px;
+}
+.ap-gauge-legend .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #C9C6C0;
+}
+.ap-gauge-legend .row strong {
+  color: #fff;
+  font-weight: 900;
+  margin-left: 4px;
+}
+.ap-gauge-legend .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.ap-line-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+.ap-line-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.ap-line-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 6px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: #C9C6C0;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+#adminLineDots circle { transition: r .2s ease; }
+#adminLineDots circle:hover { r: 6; }
+
+.ap-heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 640px) {
+  .ap-heatmap { grid-template-columns: repeat(4, 1fr); }
+}
+.hm-day {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.hm-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #C9C6C0;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.hm-cells {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hm-cell {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: rgba(255,255,255,.06);
+}
+.hm-cell[data-level="1"] { background: rgba(232,67,74,.25); }
+.hm-cell[data-level="2"] { background: rgba(232,67,74,.55); }
+.hm-cell[data-level="3"] { background: #E8434A; }
+.hm-cell:hover { filter: brightness(1.3); transform: scale(1.08); }
+.hm-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  font-size: 11.5px;
+  color: #C9C6C0;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRACTICE + ATTENDANCE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.ap-practice-card {
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid rgba(232,67,74,.25);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.ap-practice-card .head {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+}
+.ap-practice-card h4 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: #fff;
+  font-weight: 800;
+}
+.ap-practice-card .meta {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.ap-practice-card .badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.ap-practice-card .actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ap-att-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.03);
+  border-radius: 11px;
+  margin-bottom: 8px;
+  border-left: 4px solid rgba(255,255,255,.1);
+}
+.ap-att-row.present { border-color: #7EE29A; background: rgba(126,226,154,.05); }
+.ap-att-row.absent  { border-color: #FF8B85; background: rgba(255,139,133,.05); }
+.ap-att-row.late    { border-color: #FFC755; background: rgba(255,176,32,.05); }
+.ap-att-row.apology { border-color: #7AB8FF; background: rgba(122,184,255,.05); }
+.ap-att-row.unmarked{ border-color: rgba(255,255,255,.15); }
+
+.ap-att-row img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(232,67,74,.5);
+}
+.ap-att-row .info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.ap-att-row .info strong {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+.ap-att-row .info small {
+  color: #C9C6C0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.ap-att-row .btn-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ap-status-btn {
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.15);
+  color: #E5E5EA;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: .15s;
+  white-space: nowrap;
+}
+.ap-status-btn:hover {
+  border-color: #E8434A;
+  color: #fff;
+}
+.ap-status-btn.active[data-status="present"] {
+  background: #7EE29A;
+  color: #04223f;
+  border-color: #7EE29A;
+}
+.ap-status-btn.active[data-status="absent"] {
+  background: #FF8B85;
+  color: #2b0a0a;
+  border-color: #FF8B85;
+}
+.ap-status-btn.active[data-status="late"] {
+  background: #FFC755;
+  color: #2b1e00;
+  border-color: #FFC755;
+}
+.ap-status-btn.active[data-status="apology"] {
+  background: #7AB8FF;
+  color: #04223f;
+  border-color: #7AB8FF;
+}
+
+.ap-apology-item {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border-left: 4px solid #FFC755;
+  margin-bottom: 12px;
+}
+.ap-apology-item.accepted { border-color: #7EE29A; background: rgba(126,226,154,.05); }
+.ap-apology-item.rejected { border-color: #FF8B85; background: rgba(255,139,133,.05); }
+.ap-apology-item .head {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.ap-apology-item .head strong {
+  color: #fff;
+  font-size: 15px;
+}
+.ap-apology-item p {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 6px 0;
+}
+.ap-apology-item .actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 3: SUGGESTIONS STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.ap-sug-item {
+  padding: 18px 20px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  background: rgba(255,255,255,.04);
+  border-left: 4px solid #7AB8FF;
+  border-top: 1.5px solid rgba(255,255,255,.08);
+  border-right: 1.5px solid rgba(255,255,255,.08);
+  border-bottom: 1.5px solid rgba(255,255,255,.08);
+}
+.ap-sug-item.reviewed { border-left-color: #7AB8FF; }
+.ap-sug-item.planned  { border-left-color: #FFC755; background: rgba(255,176,32,.05); }
+.ap-sug-item.done     { border-left-color: #7EE29A; background: rgba(126,226,154,.05); }
+.ap-sug-item.declined { border-left-color: #FF8B85; background: rgba(255,139,133,.05); }
+.ap-sug-item.new      { border-left-color: #E8434A; background: rgba(232,67,74,.05); }
+
+.ap-sug-item .head {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.ap-sug-item .head .left { flex: 1; min-width: 0; }
+.ap-sug-item .head strong {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  display: block;
+  margin-top: 4px;
+}
+.ap-sug-item .head time {
+  font-size: 11.5px;
+  color: #C9C6C0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ap-sug-item .meta {
+  color: #C9C6C0;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.ap-sug-item p {
+  color: #E5E5EA;
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+.ap-sug-tag {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ap-sug-tag.new      { background: rgba(232,67,74,.22); color: #FF6B77; }
+.ap-sug-tag.reviewed { background: rgba(122,184,255,.22); color: #7AB8FF; }
+.ap-sug-tag.planned  { background: rgba(255,176,32,.22); color: #FFC755; }
+.ap-sug-tag.done     { background: rgba(126,226,154,.22); color: #7EE29A; }
+.ap-sug-tag.declined { background: rgba(255,139,133,.22); color: #FF8B85; }
+.ap-sug-tag.cat      { background: rgba(255,255,255,.08); color: #C9C6C0; margin-right: 6px; }
+.ap-sug-tag.anon     { background: rgba(150,90,255,.22); color: #B69BFF; margin-right: 6px; }
+
+.ap-sug-response {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(122,184,255,.08);
+  border-left: 3px solid #7AB8FF;
+}
+.ap-sug-response small {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  color: #7AB8FF;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ap-sug-response p {
+  margin: 0;
+  color: #E5E5EA;
+  font-size: 13.5px;
+}
+.ap-sug-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+</style>
+</head>
+<body class="admin-body">
+
+<div class="ap-overlay" id="apOverlay"></div>
+
+<!-- ═══════════ SIDEBAR — NO <nav> tag ═══════════ -->
+<aside class="ap-sidebar" id="apSidebar" role="navigation" aria-label="Admin menu">
+  <div class="ap-brand">
+    <img src="assets/images/logo.png" alt="GCO"
+      onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2218%22 fill=%22%23C11B26%22/><text x=%2220%22 y=%2227%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22>G</text></svg>'">
+    <span>GCO Admin</span>
+  </div>
+  <ul class="ap-nav" id="adminNav">
+    <li><button data-panel="dashboard" class="active"><span class="ic">📊</span> Dashboard</button></li>
+    <li><button data-panel="members"><span class="ic">🎻</span> Members</button></li>
+    <li><button data-panel="admins"><span class="ic">🛡️</span> Admins</button></li>
+    <li><button data-panel="database"><span class="ic">🗄️</span> Database</button></li>
+    <li><button data-panel="practices"><span class="ic">📅</span> Practices</button></li>
+    <li><button data-panel="attendance"><span class="ic">✅</span> Attendance</button></li>
+    <li><button data-panel="suggestions"><span class="ic">💡</span> Suggestions</button></li>
+    <li><button data-panel="events"><span class="ic">🎫</span> Events</button></li>
+    <li><button data-panel="content"><span class="ic">📝</span> Content</button></li>
+    <li><button data-panel="announce"><span class="ic">📢</span> Announcements</button></li>
+    <li><button data-panel="chat"><span class="ic">💬</span> Chat</button></li>
+    <li><button data-panel="messages"><span class="ic">✉️</span> Messages</button></li>
+    <li><button data-panel="activity"><span class="ic">📡</span> Activity Log</button></li>
+    <li><button data-panel="reports"><span class="ic">📈</span> Reports</button></li>
+    <li><button data-panel="settings"><span class="ic">⚙️</span> Settings</button></li>
+  </ul>
+</aside>
+
+<main class="ap-main">
+  <div class="ap-topbar">
+    <div class="ap-topbar-left">
+      <button class="ap-menu-toggle" id="apMenuToggle" aria-label="Toggle menu">☰</button>
+      <h1 id="panelTitle">Dashboard <em>Overview</em></h1>
+    </div>
+    <div class="ap-user">
+      <img id="myAvatar" src="https://ui-avatars.com/api/?name=Admin&background=C11B26&color=fff" alt="Admin avatar">
+      <div class="meta">
+        <strong id="myName">Administrator</strong>
+        <small id="myRole">Super Admin</small>
+      </div>
+      <button id="logoutBtn">LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section class="ap-panel active" id="panel-dashboard">
+
+    <!-- KPI row 1 -->
+    <div class="ap-metrics">
+      <div class="ap-metric"><span>Total Members</span><strong id="mTotal">0</strong><small id="mTotalDelta">Live count</small></div>
+      <div class="ap-metric warn"><span>Pending Approvals</span><strong id="mPending">0</strong><small>Awaiting review</small></div>
+      <div class="ap-metric"><span>Events Live</span><strong id="mEvents">0</strong><small>Upcoming</small></div>
+      <div class="ap-metric bad"><span>Tickets Sold</span><strong id="mTickets">0</strong><small>This season</small></div>
+    </div>
+
+    <!-- KPI row 2 -->
+    <div class="ap-metrics compact">
+      <div class="ap-metric blue"><span>Approval Rate</span><strong id="mApprovalRate">—</strong><small>of applications</small></div>
+      <div class="ap-metric"><span>Ticket Revenue</span><strong id="mRevenue">P0</strong><small>total earned</small></div>
+      <div class="ap-metric blue"><span>Admins</span><strong id="mAdmins">0</strong><small>active</small></div>
+      <div class="ap-metric warn"><span>Unread Messages</span><strong id="mUnread">0</strong><small>from members</small></div>
+    </div>
+
+    <!-- ROW 1: Radial gauge + Line chart -->
+    <div class="ap-chart-row">
+      <div class="ap-card">
+        <p class="kicker">Approval</p>
+        <h3>Membership Approval Rate</h3>
+        <p class="sub">Approved vs total applications this season.</p>
+        <div class="ap-gauge-wrap">
+          <div class="ap-gauge">
+            <svg viewBox="0 0 200 120" width="240" height="140">
+              <path d="M 20 110 A 80 80 0 0 1 180 110"
+                    fill="none" stroke="rgba(255,255,255,.08)"
+                    stroke-width="16" stroke-linecap="round"/>
+              <path id="adminGaugeArc"
+                    d="M 20 110 A 80 80 0 0 1 180 110"
+                    fill="none" stroke="url(#adminGaugeGrad)"
+                    stroke-width="16" stroke-linecap="round"
+                    stroke-dasharray="0 251"/>
+              <defs>
+                <linearGradient id="adminGaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%"   stop-color="#C11B26"/>
+                  <stop offset="50%"  stop-color="#E8434A"/>
+                  <stop offset="100%" stop-color="#7EE29A"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ap-gauge-value">
+              <strong id="adminGaugePct">0%</strong>
+              <small>approved</small>
+            </div>
+          </div>
+          <div class="ap-gauge-legend">
+            <div class="row"><span class="dot" style="background:#7EE29A"></span> Approved: <strong id="gaugeApproved">0</strong></div>
+            <div class="row"><span class="dot" style="background:#FFC755"></span> Pending: <strong id="gaugePending">0</strong></div>
+            <div class="row"><span class="dot" style="background:#FF8B85"></span> Rejected: <strong id="gaugeRejected">0</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ap-card">
+        <p class="kicker">Trend</p>
+        <h3>New Members Over Time</h3>
+        <p class="sub">Registrations per month across the last 6 months.</p>
+        <div class="ap-line-wrap">
+          <svg viewBox="0 0 400 180" preserveAspectRatio="none" class="ap-line-svg">
+            <defs>
+              <linearGradient id="adminLineFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#E8434A" stop-opacity=".4"/>
+                <stop offset="100%" stop-color="#E8434A" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="40"  x2="400" y2="40"  stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <line x1="0" y1="80"  x2="400" y2="80"  stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <line x1="0" y1="160" x2="400" y2="160" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <path id="adminLineArea" d="" fill="url(#adminLineFill)" stroke="none"/>
+            <path id="adminLinePath" d="" fill="none" stroke="#E8434A" stroke-width="3"
+                  stroke-linejoin="round" stroke-linecap="round"/>
+            <g id="adminLineDots"></g>
+          </svg>
+          <div class="ap-line-labels">
+            <span>Apr</span><span>May</span><span>Jun</span>
+            <span>Jul</span><span>Aug</span><span>Sep</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Pie + Comparison -->
+    <div class="ap-chart-row">
+      <div class="ap-card">
+        <p class="kicker">Membership</p>
+        <h3>Member Status Breakdown</h3>
+        <p class="sub">Live distribution of member accounts.</p>
+        <div class="ap-pie-wrap">
+          <div class="ap-pie" id="pieMembers"></div>
+          <div class="ap-legend">
+            <div class="row"><span class="dot" style="background:#7EE29A"></span> Approved <span class="val" id="legApproved">0</span></div>
+            <div class="row"><span class="dot" style="background:#FFB020"></span> Pending  <span class="val" id="legPending">0</span></div>
+            <div class="row"><span class="dot" style="background:#FF8B85"></span> Rejected <span class="val" id="legRejected">0</span></div>
+            <div class="row"><span class="dot" style="background:#7AB8FF"></span> Admins   <span class="val" id="legAdmins">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ap-card">
+        <p class="kicker">Comparison</p>
+        <h3>System Snapshot</h3>
+        <p class="sub">Everything at a glance — members, events, tickets, admins, messages.</p>
+        <div class="ap-bar-chart" id="comparisonBars">
+          <div class="bar" data-label="Members" style="height:0%"><span>0</span></div>
+          <div class="bar" data-label="Events"  style="height:0%"><span>0</span></div>
+          <div class="bar" data-label="Tickets" style="height:0%"><span>0</span></div>
+          <div class="bar" data-label="Admins"  style="height:0%"><span>0</span></div>
+          <div class="bar" data-label="Messages" style="height:0%"><span>0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: Donut + Section bars -->
+    <div class="ap-chart-row">
+      <div class="ap-card">
+        <p class="kicker">Revenue</p>
+        <h3>Ticket Sales Performance</h3>
+        <p class="sub">Sold vs remaining capacity across all events.</p>
+        <div class="ap-donut-wrap">
+          <div class="ap-donut" id="revenueDonut">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="url(#gradRed)" stroke-width="12"
+                      stroke-linecap="round" stroke-dasharray="0 264" id="donutArc"/>
+              <defs>
+                <linearGradient id="gradRed" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%"  stop-color="#E8434A"/>
+                  <stop offset="100%" stop-color="#C11B26"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="center">
+              <strong id="donutPct">0%</strong>
+              <small>Sold</small>
+            </div>
+          </div>
+          <div class="ap-legend">
+            <div class="row"><span class="dot" style="background:#E8434A"></span> Tickets sold <span class="val" id="donutSold">0</span></div>
+            <div class="row"><span class="dot" style="background:rgba(255,255,255,.15)"></span> Remaining <span class="val" id="donutRemaining">0</span></div>
+            <div class="row"><span class="dot" style="background:#7EE29A"></span> Revenue <span class="val" id="donutRevenue">P0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ap-card">
+        <p class="kicker">Instruments</p>
+        <h3>Top Sections</h3>
+        <p class="sub">Member distribution by instrument category.</p>
+        <div class="ap-hbar" id="sectionBars"></div>
+      </div>
+    </div>
+
+    <!-- ROW 4: Heatmap -->
+    <div class="ap-card">
+      <p class="kicker">Pattern</p>
+      <h3>Activity by Weekday</h3>
+      <p class="sub">When members are most active (last 4 weeks).</p>
+      <div class="ap-heatmap">
+        <div class="hm-day"><span class="hm-label">Mon</span><div class="hm-cells"><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="1"></div></div></div>
+        <div class="hm-day"><span class="hm-label">Tue</span><div class="hm-cells"><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="3"></div></div></div>
+        <div class="hm-day"><span class="hm-label">Wed</span><div class="hm-cells"><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div></div></div>
+        <div class="hm-day"><span class="hm-label">Thu</span><div class="hm-cells"><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="3"></div></div></div>
+        <div class="hm-day"><span class="hm-label">Fri</span><div class="hm-cells"><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="1"></div></div></div>
+        <div class="hm-day"><span class="hm-label">Sat</span><div class="hm-cells"><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="0"></div></div></div>
+        <div class="hm-day"><span class="hm-label">Sun</span><div class="hm-cells"><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div></div></div>
+      </div>
+      <div class="hm-legend">
+        <span>Less</span>
+        <span class="hm-cell" data-level="0"></span>
+        <span class="hm-cell" data-level="1"></span>
+        <span class="hm-cell" data-level="2"></span>
+        <span class="hm-cell" data-level="3"></span>
+        <span>More</span>
+      </div>
+    </div>
+
+    <!-- Live feed -->
+    <div class="ap-card">
+      <p class="kicker">Live Feed</p>
+      <h3>Recent Activity</h3>
+      <p class="sub">Real-time monitor of admin, member, and system events.</p>
+      <div class="ap-log-stream" id="activityFeed"></div>
+    </div>
+  </section>
+
+  <!-- MEMBERS -->
+  <section class="ap-panel" id="panel-members">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+        <div>
+          <p class="kicker">Manage</p>
+          <h3>Orchestra Members</h3>
+          <p class="sub">Full CRUD — create, edit, approve, or remove member accounts.</p>
+        </div>
+        <button class="ap-btn" id="addMemberBtn">+ ADD NEW MEMBER</button>
+      </div>
+      <div class="ap-table-wrap">
+        <table class="ap-table">
+          <thead>
+            <tr>
+              <th>Photo</th><th>Name</th><th>Email</th><th>Instrument</th>
+              <th>Phone</th><th>Status</th><th>Joined</th><th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="membersTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMINS -->
+  <section class="ap-panel" id="panel-admins">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+        <div>
+          <p class="kicker">Access Control</p>
+          <h3>Administrators & Roles</h3>
+          <p class="sub">Full CRUD — add new admins, edit roles & permissions, or remove access.</p>
+        </div>
+        <button class="ap-btn" id="addAdminBtn">+ ADD NEW ADMIN</button>
+      </div>
+      <div class="ap-table-wrap">
+        <table class="ap-table">
+          <thead>
+            <tr>
+              <th>Photo</th><th>Name</th><th>Email</th><th>Role</th>
+              <th>Permissions</th><th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATABASE -->
+  <section class="ap-panel" id="panel-database">
+    <div class="ap-card">
+      <p class="kicker">DBMS View</p>
+      <h3>Live Database Records</h3>
+      <p class="sub">Direct view into the underlying storage. Query, inspect, and drill into individual records.</p>
+
+      <div class="ap-db-toolbar">
+        <select id="dbTableSelect">
+          <option value="members">📋 Members</option>
+          <option value="admins">🛡️ Admins</option>
+          <option value="events">🎫 Events</option>
+          <option value="practices">📅 Practices</option>
+          <option value="apologies">🙏 Apologies</option>
+          <option value="suggestions">💡 Suggestions</option>
+          <option value="content">📝 Content</option>
+          <option value="announcements">📢 Announcements</option>
+          <option value="messages">✉️ Messages</option>
+          <option value="activity">📡 Activity Log</option>
+        </select>
+        <input id="dbSearch" placeholder="Search records…">
+        <span class="ap-db-count" id="dbCount">Loading…</span>
+        <button class="ap-btn small" onclick="exportDbTable()">⬇ EXPORT CSV</button>
+        <button class="ap-btn ghost small" onclick="renderDatabase()">↻ REFRESH</button>
+      </div>
+
+      <div class="ap-table-wrap">
+        <table class="ap-table" id="dbTable">
+          <thead id="dbTableHead"></thead>
+          <tbody id="dbTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICES -->
+  <section class="ap-panel" id="panel-practices">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+        <div>
+          <p class="kicker">Schedule</p>
+          <h3>Practice Sessions</h3>
+          <p class="sub">Create rehearsals and practice sessions. Each new practice auto-generates an attendance list for all approved members.</p>
+        </div>
+        <button class="ap-btn" id="addPracticeBtn">+ CREATE PRACTICE</button>
+      </div>
+      <div id="practicesList"></div>
+    </div>
+  </section>
+
+  <!-- ATTENDANCE -->
+  <section class="ap-panel" id="panel-attendance">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+        <div>
+          <p class="kicker">Mark Presence</p>
+          <h3>Attendance</h3>
+          <p class="sub">Select a practice session, then mark each member as Present, Absent, Late, or Apology.</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="ap-btn ghost small" onclick="syncPracticeMembers()">🔄 SYNC MEMBERS</button>
+          <button class="ap-btn" onclick="saveAttendance()">💾 SAVE ATTENDANCE</button>
+        </div>
+      </div>
+
+      <div class="ap-form" style="margin-bottom:20px">
+        <div class="row">
+          <div>
+            <label for="attendancePracticeSelect">Select Practice</label>
+            <select id="attendancePracticeSelect">
+              <option value="">— Choose a practice —</option>
+            </select>
+          </div>
+          <div>
+            <label for="attendanceFilter">Filter by Status</label>
+            <select id="attendanceFilter">
+              <option value="all">All members</option>
+              <option value="unmarked">Unmarked only</option>
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="late">Late</option>
+              <option value="apology">Apology</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="ap-btn ghost small" onclick="markAll('present')">✅ MARK ALL PRESENT</button>
+        <button class="ap-btn ghost small" onclick="markAll('absent')">❌ MARK ALL ABSENT</button>
+        <button class="ap-btn ghost small" onclick="markAll('unmarked')">↺ RESET ALL</button>
+      </div>
+
+      <div id="attendanceList">
+        <div class="ap-empty">Select a practice above to mark attendance.</div>
+      </div>
+    </div>
+
+    <div class="ap-card">
+      <p class="kicker">Apologies</p>
+      <h3>Member Apologies</h3>
+      <p class="sub">Review and accept/reject apologies submitted by members.</p>
+      <div id="apologiesList">
+        <div class="ap-empty">Loading apologies…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUGGESTIONS -->
+  <section class="ap-panel" id="panel-suggestions">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+        <div>
+          <p class="kicker">Member Ideas</p>
+          <h3>Suggestions Box</h3>
+          <p class="sub">Review suggestions from members. Mark them as reviewed, planned, or done — and reply with a response.</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="ap-btn ghost small" onclick="renderSuggestions()">↻ REFRESH</button>
+        </div>
+      </div>
+
+      <div class="ap-log-filters" id="sugFilters" style="margin-bottom:16px">
+        <button data-filter="all"      class="active">All</button>
+        <button data-filter="new">New</button>
+        <button data-filter="reviewed">Reviewed</button>
+        <button data-filter="planned">Planned</button>
+        <button data-filter="done">Done</button>
+        <button data-filter="declined">Declined</button>
+      </div>
+
+      <div id="suggestionsList">
+        <div class="ap-empty">Loading suggestions…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section class="ap-panel" id="panel-events">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+        <div>
+          <p class="kicker">Events</p>
+          <h3>Upcoming Events & Tickets</h3>
+          <p class="sub">Create events and generate QR tickets.</p>
+        </div>
+        <button class="ap-btn" id="addEventBtn">+ CREATE EVENT</button>
+      </div>
+      <div id="eventsList"></div>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <section class="ap-panel" id="panel-content">
+    <div class="ap-card">
+      <p class="kicker">Content Studio</p>
+      <h3>Website Content Manager</h3>
+      <p class="sub">Publish blogs, videos, posters — they appear on the public site instantly.</p>
+      <form class="ap-form" id="contentForm">
+        <div class="row">
+          <div><label for="cType">Content Type</label>
+            <select id="cType" required>
+              <option value="blog">Blog / News Post</option>
+              <option value="video">Performance Video</option>
+              <option value="poster">Poster / Banner</option>
+              <option value="profile">Member Profile Update</option>
+              <option value="event-announcement">Event Announcement</option>
+            </select>
+          </div>
+          <div><label for="cPublish">Visibility</label>
+            <select id="cPublish">
+              <option value="draft">Save as Draft</option>
+              <option value="published">Publish Immediately</option>
+            </select>
+          </div>
+        </div>
+        <div><label for="cTitle">Title</label><input id="cTitle" required placeholder="e.g. Winter Concert 2025 Highlights"></div>
+        <div><label for="cBody">Body / Description</label><textarea id="cBody" placeholder="Write the story…"></textarea></div>
+        <div class="row">
+          <div><label for="cMedia">Upload Image / Video</label><input id="cMedia" type="file" accept="image/*,video/*"></div>
+          <div><label for="cTags">Tags (comma separated)</label><input id="cTags" placeholder="concert, 2025"></div>
+        </div>
+        <div class="actions"><button class="ap-btn" type="submit">SAVE CONTENT</button><button class="ap-btn ghost" type="reset">CLEAR</button></div>
+      </form>
+    </div>
+    <div class="ap-card"><h3>Published Content</h3><p class="sub">Everything currently live on the website.</p><div id="contentList"></div></div>
+  </section>
+
+  <!-- ANNOUNCE -->
+  <section class="ap-panel" id="panel-announce">
+    <div class="ap-card">
+      <p class="kicker">Broadcast</p><h3>Announcements</h3>
+      <p class="sub">Send messages to all members or specific groups.</p>
+      <form class="ap-form" id="announceForm">
+        <div class="row">
+          <div><label for="aAudience">Audience</label>
+            <select id="aAudience">
+              <option>All members</option><option>Approved members only</option>
+              <option>Pending members</option><option>Admins only</option><option>Event ticket holders</option>
+            </select>
+          </div>
+          <div><label for="aPriority">Priority</label>
+            <select id="aPriority"><option>Normal</option><option>Important</option><option>Urgent</option></select>
+          </div>
+        </div>
+        <div><label for="aSubject">Subject</label><input id="aSubject" required placeholder="Rehearsal moved to 7pm"></div>
+        <div><label for="aMessage">Message</label><textarea id="aMessage" required placeholder="Write your announcement…"></textarea></div>
+        <div class="actions"><button class="ap-btn" type="submit">SEND ANNOUNCEMENT</button></div>
+      </form>
+    </div>
+    <div class="ap-card"><h3>Announcement History</h3><div id="announceList"></div></div>
+  </section>
+
+  <!-- MESSAGES -->
+  <section class="ap-panel" id="panel-messages">
+    <div class="ap-card">
+      <p class="kicker">Inbox</p><h3>Messages from Members</h3>
+      <p class="sub">Direct messages and enquiries from orchestra members.</p>
+      <div id="messagesList"></div>
+    </div>
+  </section>
+
+  <!-- ACTIVITY LOG -->
+  <section class="ap-panel" id="panel-activity">
+    <div class="ap-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+        <div><p class="kicker">Audit Trail</p><h3>Full System Activity Log</h3>
+        <p class="sub">Every action by any admin, member, or system event.</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="ap-btn ghost small" onclick="exportLogs()">⬇ EXPORT LOGS</button>
+          <button class="ap-btn danger small" onclick="clearLogs()">🗑 CLEAR LOG</button>
+        </div>
+      </div>
+      <div class="ap-log-filters" id="logFilters">
+        <button data-filter="all" class="active">All</button>
+        <button data-filter="admin">Admins</button>
+        <button data-filter="member">Members</button>
+        <button data-filter="system">System</button>
+        <button data-filter="success">Success</button>
+        <button data-filter="danger">Alerts</button>
+      </div>
+      <div style="margin-bottom:16px">
+        <input id="logSearch" placeholder="Search activity…" style="width:100%;background:rgba(0,0,0,.4);border:1.5px solid rgba(255,255,255,.18);color:#fff;padding:12px 16px;border-radius:9px;font-size:14px;font-family:inherit;font-weight:600">
+      </div>
+      <div class="ap-log-stream" id="fullLog"></div>
+    </div>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="ap-panel" id="panel-reports">
+    <div class="ap-card">
+      <p class="kicker">Analytics</p><h3>Reports & Exports</h3>
+      <p class="sub">Pull detailed reports in CSV.</p>
+      <div class="ap-form">
+        <div class="row">
+          <button class="ap-btn" onclick="downloadReport('members')">📄 MEMBERS (CSV)</button>
+          <button class="ap-btn" onclick="downloadReport('events')">🎫 EVENTS (CSV)</button>
+        </div>
+        <div class="row">
+          <button class="ap-btn" onclick="downloadReport('tickets')">🎟️ TICKETS (CSV)</button>
+          <button class="ap-btn" onclick="downloadReport('admins')">🛡️ ADMINS (CSV)</button>
+        </div>
+        <div class="row">
+          <button class="ap-btn" onclick="downloadReport('activity')">📊 ACTIVITY (CSV)</button>
+          <button class="ap-btn" onclick="downloadReport('financial')">💰 FINANCIAL (CSV)</button>
+        </div>
+        <div class="row">
+          <button class="ap-btn" onclick="downloadReport('practices')">📅 PRACTICES (CSV)</button>
+          <button class="ap-btn" onclick="downloadReport('apologies')">🙏 APOLOGIES (CSV)</button>
+        </div>
+        <div class="row">
+          <button class="ap-btn" onclick="downloadReport('suggestions')">💡 SUGGESTIONS (CSV)</button>
+        </div>
+      </div>
+    </div>
+    <div class="ap-card">
+      <h3>Key Performance Indicators</h3>
+      <div class="ap-metrics" style="margin-top:18px">
+        <div class="ap-metric"><span>Approval Rate</span><strong id="kpiApprove">—</strong><small>of applications</small></div>
+        <div class="ap-metric"><span>Avg Response</span><strong>2.4h</strong><small>to enquiries</small></div>
+        <div class="ap-metric"><span>Ticket Revenue</span><strong id="kpiRevenue">P0</strong><small>this season</small></div>
+        <div class="ap-metric"><span>Active Members</span><strong id="kpiActive">0</strong><small>last 30 days</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="ap-panel" id="panel-settings">
+    <div class="ap-card">
+      <p class="kicker">My Account</p><h3>Admin Profile</h3>
+      <p class="sub">Update your display name, avatar, and password.</p>
+      <form class="ap-form" id="settingsForm">
+        <div class="row">
+          <div><label for="sName">Display Name</label><input id="sName" required></div>
+          <div><label for="sEmail">Email</label><input id="sEmail" type="email" readonly></div>
+        </div>
+        <div><label for="sAvatar">Avatar URL</label><input id="sAvatar" placeholder="https://… or leave blank"></div>
+        <div class="actions"><button class="ap-btn" type="submit">SAVE PROFILE</button></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<div class="ap-modal-mask" id="modal"><div class="ap-modal-box" id="modalBox"></div></div>
+<div class="ap-toast" id="toast"></div>
+
+<!-- Site chrome destroyer -->
+<script>
+(function destroySiteChrome(){
+  function sweep(){
+    const allowed = ['ap-sidebar','ap-main','ap-modal-mask','ap-toast','ap-overlay'];
+    [...document.body.children].forEach(el => {
+      if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'LINK') return;
+      if (el.classList && allowed.some(a => el.classList.contains(a))) return;
+      el.remove();
+    });
+    document.documentElement.style.setProperty('padding','0','important');
+    document.documentElement.style.setProperty('margin','0','important');
+    document.body.style.setProperty('padding','0','important');
+    document.body.style.setProperty('margin','0','important');
+    document.body.style.setProperty('padding-top','0','important');
+  }
+  sweep();
+  document.addEventListener('DOMContentLoaded', sweep);
+  window.addEventListener('load', sweep);
+  new MutationObserver(sweep).observe(document.documentElement, { childList: true, subtree: false });
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const toast = (msg, type='ok') => {
+  const t = $('#toast'); t.textContent = msg;
+  t.className = 'ap-toast show ' + type;
+  clearTimeout(t._h); t._h = setTimeout(() => t.className = 'ap-toast', 3600);
+};
+const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+
+const API = {
+  token: () => sessionStorage.getItem('gcoSession'),
+  async req(path, opts = {}){
+    const res = await fetch(path, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (this.token() || ''),
+        ...(opts.headers || {})
+      }
+    });
+    if (res.status === 204) return {};
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  },
+  get: (p)     => API.req(p),
+  post: (p, b) => API.req(p, { method: 'POST',   body: JSON.stringify(b || {}) }),
+  put:  (p, b) => API.req(p, { method: 'PUT',    body: JSON.stringify(b || {}) }),
+  del:  (p)    => API.req(p, { method: 'DELETE' })
+};
+
+async function ensureAdminOrRedirect(){
+  if (!API.token()){
+    if (sessionStorage.getItem('gcoOfflineRole') === 'admin'){
+      toast('Demo mode — sign in with the server for live data', 'err');
+      return true;
+    }
+    location.href = 'portal.html';
+    return false;
+  }
+  try {
+    const me = await API.get('/api/auth/me');
+    if (me.role !== 'admin'){
+      sessionStorage.removeItem('gcoSession');
+      location.href = 'portal.html';
+      return false;
+    }
+    return true;
+  } catch (err){
+    toast('Session expired — please sign in again', 'err');
+    sessionStorage.removeItem('gcoSession');
+    setTimeout(() => location.href = 'portal.html', 900);
+    return false;
+  }
+}
+
+/* Mobile sidebar toggle */
+const sidebar = $('#apSidebar');
+const overlay = $('#apOverlay');
+const menuToggle = $('#apMenuToggle');
+
+function openSidebar(){
+  sidebar.classList.add('open');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar(){
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
+menuToggle.addEventListener('click', () => {
+  if (sidebar.classList.contains('open')) closeSidebar();
+  else openSidebar();
+});
+overlay.addEventListener('click', closeSidebar);
+$$('#adminNav button').forEach(btn => btn.addEventListener('click', () => {
+  if (window.innerWidth <= 768) closeSidebar();
+}));
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) closeSidebar();
+});
+
+/* Sidebar nav */
+$$('#adminNav button').forEach(btn => btn.addEventListener('click', async () => {
+  $$('#adminNav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const p = btn.dataset.panel;
+  $$('.ap-panel').forEach(x => x.classList.remove('active'));
+  $('#panel-' + p).classList.add('active');
+  const nice = btn.textContent.replace(/[^\w\s&]/g,'').trim();
+  $('#panelTitle').innerHTML = nice + ' <em>Overview</em>';
+  switch(p){
+    case 'dashboard':   renderDashboard(); break;
+    case 'members':     renderMembers();   break;
+    case 'admins':      renderAdmins();    break;
+    case 'database':    renderDatabase();  break;
+    case 'practices':   renderPractices(); break;
+    case 'attendance':
+      await loadPracticesIntoSelect();
+      renderApologies();
+      if (currentPractice) renderAttendanceList();
+      break;
+    case 'suggestions': renderSuggestions(); break;
+    case 'events':      renderEvents();    break;
+    case 'content':     renderContent();   break;
+    case 'announce':    renderAnnouncements(); break;
+    case 'messages':    renderMessages();  break;
+    case 'activity':    renderFullLog();   break;
+    case 'reports':     renderReports();   break;
+    case 'settings':    renderSettings();  break;
+  }
+}));
+
+async function renderMe(){
+  try {
+    const { me } = await API.get('/api/admin/settings');
+    $('#myName').textContent = me.name || 'Administrator';
+    $('#myRole').textContent = me.role || 'Super Admin';
+    $('#myAvatar').src = me.avatar ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(me.name || 'Admin')}&background=C11B26&color=fff`;
+  } catch {
+    $('#myName').textContent = 'Administrator';
+    $('#myRole').textContent = 'Super Admin';
+  }
+}
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+async function renderDashboard(){
+  try {
+    const [membersRes, eventsRes, adminsRes, messagesRes] = await Promise.all([
+      API.get('/api/admin/members').catch(()  => ({ members: [] })),
+      API.get('/api/admin/events').catch(()   => ({ events: [] })),
+      API.get('/api/admin/admins').catch(()   => ({ admins: [] })),
+      API.get('/api/admin/messages').catch(() => ({ messages: [] }))
+    ]);
+    const members  = membersRes.members  || [];
+    const events   = eventsRes.events    || [];
+    const admins   = adminsRes.admins    || [];
+    const messages = messagesRes.messages || [];
+
+    const approved = members.filter(m => m.status === 'approved').length;
+    const pending  = members.filter(m => m.status === 'pending').length;
+    const rejected = members.filter(m => m.status === 'rejected').length;
+    const tickets  = events.reduce((s, e) => s + (e.sold || 0), 0);
+    const revenue  = events.reduce((s, e) => s + (e.sold || 0) * (e.price || 0), 0);
+    const unread   = messages.filter(m => !m.read).length;
+    const approvalRate = members.length ? Math.round((approved / members.length) * 100) : 0;
+
+    $('#mTotal').textContent   = members.length;
+    $('#mPending').textContent = pending;
+    $('#mEvents').textContent  = events.length;
+    $('#mTickets').textContent = tickets;
+    $('#mAdmins').textContent  = admins.length;
+    $('#mRevenue').textContent = 'P' + revenue.toLocaleString();
+    $('#mUnread').textContent  = unread;
+    $('#mApprovalRate').textContent = members.length ? approvalRate + '%' : '—';
+
+    const gaugeArc = document.getElementById('adminGaugeArc');
+    if (gaugeArc) gaugeArc.setAttribute('stroke-dasharray', `${(approvalRate / 100) * 251} 251`);
+    $('#adminGaugePct').textContent = approvalRate + '%';
+    $('#gaugeApproved').textContent = approved;
+    $('#gaugePending').textContent = pending;
+    $('#gaugeRejected').textContent = rejected;
+
+    const totalAcc = members.length + admins.length || 1;
+    const aPct = (approved / totalAcc) * 100;
+    const pPct = (pending  / totalAcc) * 100;
+    const rPct = (rejected / totalAcc) * 100;
+    const pie = document.getElementById('pieMembers');
+    if (pie) {
+      pie.style.background = `conic-gradient(
+        #7EE29A 0 ${aPct}%,
+        #FFC755 ${aPct}% ${aPct + pPct}%,
+        #FF8B85 ${aPct + pPct}% ${aPct + pPct + rPct}%,
+        #7AB8FF ${aPct + pPct + rPct}% 100%)`;
+    }
+    $('#legApproved').textContent = approved;
+    $('#legPending').textContent  = pending;
+    $('#legRejected').textContent = rejected;
+    $('#legAdmins').textContent   = admins.length;
+
+    const cmpWrap = document.getElementById('comparisonBars');
+    if (cmpWrap) {
+      const values = [members.length, events.length, tickets, admins.length, messages.length];
+      const labels = ['Members', 'Events', 'Tickets', 'Admins', 'Messages'];
+      const max = Math.max(...values, 1);
+      cmpWrap.innerHTML = values.map((v, i) => `
+        <div class="bar" data-label="${labels[i]}" style="height:${Math.max(8, (v / max) * 100)}%">
+          <span>${v}</span>
+        </div>
+      `).join('');
+    }
+
+    const totalCapacity = events.reduce((s, e) => s + (e.capacity || 0), 0);
+    const soldPct = totalCapacity ? (tickets / totalCapacity) * 100 : 0;
+    const donutArc = document.getElementById('donutArc');
+    if (donutArc) donutArc.setAttribute('stroke-dasharray', `${(soldPct / 100) * 264} 264`);
+    $('#donutPct').textContent       = Math.round(soldPct) + '%';
+    $('#donutSold').textContent      = tickets;
+    $('#donutRemaining').textContent = Math.max(0, totalCapacity - tickets);
+    $('#donutRevenue').textContent   = 'P' + revenue.toLocaleString();
+
+    const sections = { 'Strings':0,'Woodwinds':0,'Brass':0,'Percussion':0,'Keyboard':0,'Other':0 };
+    members.forEach(m => {
+      const instr = (m.instrument || '').toLowerCase();
+      if (/violin|viola|cello|guitar|bass|string/.test(instr)) sections['Strings']++;
+      else if (/flute|sax|clarinet|oboe|bassoon|woodwind/.test(instr)) sections['Woodwinds']++;
+      else if (/trumpet|horn|trombone|tuba|brass/.test(instr)) sections['Brass']++;
+      else if (/drum|percussion|timpani/.test(instr)) sections['Percussion']++;
+      else if (/piano|keyboard/.test(instr)) sections['Keyboard']++;
+      else sections['Other']++;
+    });
+    const maxSection = Math.max(...Object.values(sections), 1);
+    const sectionBars = document.getElementById('sectionBars');
+    if (sectionBars) {
+      sectionBars.innerHTML = Object.entries(sections).map(([k, v]) => `
+        <div class="row">
+          <span class="lbl">${k}</span>
+          <div class="track"><div class="fill" style="width:${(v / maxSection) * 100}%"></div></div>
+          <span class="val">${v}</span>
+        </div>`).join('');
+    }
+
+    const now = new Date();
+    const monthly = new Array(6).fill(0);
+    members.forEach(m => {
+      const created = m.createdAt || m.joined;
+      if (!created) return;
+      const d = new Date(created);
+      const diff = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+      if (diff >= 0 && diff < 6) monthly[5 - diff]++;
+    });
+    drawAdminLineChart(monthly);
+  } catch (e) { console.error(e); }
+  renderActivity();
+}
+
+function drawAdminLineChart(values){
+  const path = document.getElementById('adminLinePath');
+  const area = document.getElementById('adminLineArea');
+  const dots = document.getElementById('adminLineDots');
+  if (!path || !area || !dots) return;
+
+  const W = 400, H = 180;
+  const pad = 20;
+  const max = Math.max(...values, 1);
+  const stepX = (W - pad * 2) / (values.length - 1);
+
+  const points = values.map((v, i) => ({
+    x: pad + i * stepX,
+    y: H - pad - ((v / max) * (H - pad * 2))
+  }));
+
+  const lineD = points.map((p, i) => (i === 0 ? 'M' : 'L') + ` ${p.x} ${p.y}`).join(' ');
+  const areaD = lineD + ` L ${points[points.length-1].x} ${H - pad} L ${points[0].x} ${H - pad} Z`;
+
+  path.setAttribute('d', lineD);
+  area.setAttribute('d', areaD);
+  dots.innerHTML = points.map((p, i) => `
+    <circle cx="${p.x}" cy="${p.y}" r="4" fill="#E8434A" stroke="#0A1128" stroke-width="2">
+      <title>${values[i]} new member${values[i] === 1 ? '' : 's'}</title>
+    </circle>
+  `).join('');
+}
+
+async function renderActivity(){
+  const wrap = $('#activityFeed');
+  try {
+    const { activity } = await API.get('/api/admin/activity');
+    if (!activity.length){ wrap.innerHTML = '<div class="ap-empty">No activity yet.</div>'; return; }
+    wrap.innerHTML = activity.slice(0, 8).map(logItemHTML).join('');
+  } catch {
+    wrap.innerHTML = '<div class="ap-empty">Could not load activity.</div>';
+  }
+}
+
+/* ============================================================
+   MEMBERS — FULL CRUD
+============================================================ */
+async function renderMembers(){
+  const tbody = $('#membersTable');
+  try {
+    const { members } = await API.get('/api/admin/members');
+    if (!members.length){
+      tbody.innerHTML = '<tr><td colspan="8"><div class="ap-empty">No members yet. Click "Add New Member" above to create one.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = members.map(m => `
+      <tr>
+        <td><img class="avatar" src="${m.photoData || m.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=0A1128&color=fff`}"></td>
+        <td><strong style="color:#fff">${m.name}</strong><br><code>${m.id || ''}</code></td>
+        <td>${m.email}</td>
+        <td>${m.instrument || '—'}</td>
+        <td>${m.phone || '—'}</td>
+        <td><span class="ap-tag ${m.status}">${m.status}</span></td>
+        <td>${fmtDate(m.joined || m.createdAt)}</td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="ap-btn small ghost" onclick="viewMember('${m.id}')">VIEW</button>
+          <button class="ap-btn small blue" onclick="editMember('${m.id}')">EDIT</button>
+          ${m.status === 'pending'
+            ? `<button class="ap-btn small" onclick="approveMember('${m.id}')">APPROVE</button>` : ''}
+          <button class="ap-btn small danger" onclick="deleteMember('${m.id}')">DELETE</button>
+        </td>
+      </tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="ap-empty">${e.message}</div></td></tr>`;
+  }
+}
+
+$('#addMemberBtn').addEventListener('click', () => {
+  openModal(`
+    <h3>➕ Add New Member</h3>
+    <p class="sub">Create a new member account directly. This bypasses email verification and goes straight into the system.</p>
+    <form class="ap-form" id="addMemberForm">
+      <div class="row">
+        <div><label>Full Name *</label><input id="amName" required placeholder="Jane Doe"></div>
+        <div><label>Instrument *</label><input id="amInstrument" required placeholder="Violin"></div>
+      </div>
+      <div class="row">
+        <div><label>Email *</label><input id="amEmail" type="email" required placeholder="jane@example.com"></div>
+        <div><label>Phone</label><input id="amPhone" type="tel" placeholder="+267 71 000 000"></div>
+      </div>
+      <div class="row">
+        <div><label>National ID / Passport</label><input id="amNationalId" placeholder="123456789"></div>
+        <div><label>Date of Birth</label><input id="amDob" type="date"></div>
+      </div>
+      <div class="row">
+        <div><label>Nationality</label><input id="amNationality" value="Motswana"></div>
+        <div><label>Status</label>
+          <select id="amStatus">
+            <option value="approved">Approved</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+      </div>
+      <div><label>Address</label><input id="amAddress" placeholder="Plot, street, city"></div>
+      <div class="row">
+        <div><label>Emergency Contact</label><input id="amEmergencyName" placeholder="Name"></div>
+        <div><label>Emergency Phone</label><input id="amEmergencyPhone" type="tel" placeholder="+267 …"></div>
+      </div>
+      <div><label>Signature</label><input id="amSignature" value="admin-created" placeholder="Typed signature"></div>
+      <span class="hint">Fields marked * are required. The member will be able to sign in immediately.</span>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ CREATE MEMBER</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>
+  `);
+  $('#addMemberForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.post('/api/admin/members', {
+        name: $('#amName').value,
+        instrument: $('#amInstrument').value,
+        email: $('#amEmail').value.toLowerCase(),
+        phone: $('#amPhone').value,
+        nationalId: $('#amNationalId').value,
+        dateOfBirth: $('#amDob').value,
+        nationality: $('#amNationality').value,
+        status: $('#amStatus').value,
+        address: $('#amAddress').value,
+        emergencyName: $('#amEmergencyName').value,
+        emergencyPhone: $('#amEmergencyPhone').value,
+        signature: $('#amSignature').value,
+        password: 'GCO-' + Math.random().toString(36).slice(2,10) + '!'
+      });
+      closeModal();
+      toast('✓ Member created successfully', 'ok');
+      renderMembers(); renderDashboard();
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+});
+
+window.viewMember = async id => {
+  let m;
+  try {
+    const { members } = await API.get('/api/admin/members');
+    m = members.find(x => x.id === id);
+  } catch (e) { return toast(e.message, 'err'); }
+  if (!m) return;
+
+  const rows = [
+    ['Member ID', m.id],
+    ['Full Name', m.name],
+    ['Email', m.email],
+    ['Instrument', m.instrument],
+    ['Phone', m.phone],
+    ['National ID', m.nationalId],
+    ['Date of Birth', m.dateOfBirth],
+    ['Nationality', m.nationality],
+    ['Address', m.address],
+    ['Emergency Contact', m.emergencyName],
+    ['Emergency Phone', m.emergencyPhone],
+    ['Signature', m.signature],
+    ['Status', m.status],
+    ['Joined', fmtDate(m.joined || m.createdAt)],
+    ['Approved At', m.approvedAt ? fmtDate(m.approvedAt) : '—']
+  ];
+
+  openModal(`
+    <h3>👤 Member Details</h3>
+    <p class="sub">Complete record for <strong style="color:#E8434A">${m.name}</strong></p>
+    <div style="display:flex;gap:16px;margin-bottom:18px;align-items:center">
+      <img src="${m.photoData || m.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=C11B26&color=fff&size=128`}" style="width:80px;height:80px;border-radius:50%;border:3px solid #E8434A;object-fit:cover">
+      <div>
+        <span class="ap-tag ${m.status}">${m.status}</span>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      ${rows.map(([k,v]) => `
+        <tr>
+          <td style="padding:10px 0;color:#C9C6C0;font-weight:700;width:40%;border-bottom:1px solid rgba(255,255,255,.08)">${k}</td>
+          <td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">${v || '—'}</td>
+        </tr>`).join('')}
+    </table>
+    <div class="actions" style="margin-top:18px">
+      <button class="ap-btn blue" onclick="closeModal();editMember('${m.id}')">✏ EDIT</button>
+      <button class="ap-btn ghost" onclick="closeModal()">CLOSE</button>
+    </div>
+  `);
+};
+
+window.editMember = async id => {
+  let m;
+  try {
+    const { members } = await API.get('/api/admin/members');
+    m = members.find(x => x.id === id);
+  } catch (e) { return toast(e.message, 'err'); }
+  if (!m) return;
+  openModal(`
+    <h3>✏ Edit Member</h3>
+    <p class="sub">Update details for <strong>${m.name}</strong>.</p>
+    <form class="ap-form" id="editMemberForm">
+      <div class="row">
+        <div><label>Name</label><input id="emName" value="${m.name || ''}" required></div>
+        <div><label>Instrument</label><input id="emInstrument" value="${m.instrument || ''}" required></div>
+      </div>
+      <div class="row">
+        <div><label>Email</label><input id="emEmail" type="email" value="${m.email || ''}" required></div>
+        <div><label>Phone</label><input id="emPhone" value="${m.phone || ''}"></div>
+      </div>
+      <div class="row">
+        <div><label>Signature</label><input id="emSignature" value="${m.signature || 'n/a'}" required></div>
+        <div><label>Status</label>
+          <select id="emStatus">
+            <option value="pending"  ${m.status === 'pending'  ? 'selected' : ''}>Pending</option>
+            <option value="approved" ${m.status === 'approved' ? 'selected' : ''}>Approved</option>
+            <option value="rejected" ${m.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div><label>Address</label><input id="emAddress" value="${m.address || ''}"></div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ SAVE CHANGES</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>
+  `);
+  $('#editMemberForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.put(`/api/admin/members/${id}`, {
+        name:       $('#emName').value,
+        instrument: $('#emInstrument').value,
+        email:      $('#emEmail').value,
+        phone:      $('#emPhone').value,
+        signature:  $('#emSignature').value,
+        status:     $('#emStatus').value,
+        address:    $('#emAddress').value
+      });
+      closeModal(); toast('✓ Member updated', 'ok');
+      renderMembers(); renderDashboard();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+};
+
+window.approveMember = async id => {
+  try {
+    await API.post(`/api/admin/members/${id}/approve`, {});
+    toast('✓ Member approved', 'ok');
+    renderMembers(); renderDashboard();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+window.deleteMember = async id => {
+  if (!confirm('⚠ Delete this member permanently? This cannot be undone.')) return;
+  try {
+    await API.del(`/api/admin/members/${id}`);
+    toast('✓ Member deleted', 'ok');
+    renderMembers(); renderDashboard();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ============================================================
+   ADMINS — FULL CRUD
+============================================================ */
+const ALL_PERMS = ['members','admins','events','content','announce','messages','reports','settings','database','practices','suggestions'];
+
+async function renderAdmins(){
+  const tbody = $('#adminsTable');
+  try {
+    const { admins } = await API.get('/api/admin/admins');
+    if (!admins.length){
+      tbody.innerHTML = '<tr><td colspan="6"><div class="ap-empty">No admins yet.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = admins.map(a => `
+      <tr>
+        <td><img class="avatar" src="${a.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=C11B26&color=fff`}"></td>
+        <td><strong style="color:#fff">${a.name}</strong><br><code>${a.id || ''}</code></td>
+        <td>${a.email}</td>
+        <td><span class="ap-tag admin">${a.role}</span></td>
+        <td>${(a.perms || []).map(p => `<span class="ap-tag member" style="margin:2px">${p}</span>`).join('')}</td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="ap-btn small ghost" onclick="viewAdmin('${a.id}')">VIEW</button>
+          <button class="ap-btn small blue" onclick="editAdmin('${a.id}')">EDIT</button>
+          <button class="ap-btn small danger" onclick="deleteAdmin('${a.id}')">DELETE</button>
+        </td>
+      </tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="ap-empty">${e.message}</div></td></tr>`;
+  }
+}
+
+$('#addAdminBtn').addEventListener('click', () => {
+  openModal(`
+    <h3>➕ Add New Admin</h3>
+    <p class="sub">Create a new administrator account and assign permissions.</p>
+    <form class="ap-form" id="addAdminForm">
+      <div><label>Full Name *</label><input id="aaName" required placeholder="John Doe"></div>
+      <div><label>Email *</label><input id="aaEmail" type="email" required placeholder="john@gco.bw"></div>
+      <div class="row">
+        <div><label>Username *</label><input id="aaUsername" required placeholder="johndoe"></div>
+        <div><label>Password *</label><input id="aaPassword" type="password" required minlength="8" placeholder="Min 8 chars, 1 number"></div>
+      </div>
+      <div><label>Role</label>
+        <select id="aaRole">
+          <option>Super Admin</option><option>Content Editor</option>
+          <option>Membership</option><option>Events Manager</option><option>Read Only</option>
+        </select>
+      </div>
+      <div>
+        <label>Permissions</label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;padding:14px;background:rgba(0,0,0,.3);border-radius:10px">
+          ${ALL_PERMS.map(p => `<label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;text-transform:capitalize;letter-spacing:0;color:#E5E5EA">
+            <input type="checkbox" value="${p}" style="width:auto"> ${p}
+          </label>`).join('')}
+        </div>
+      </div>
+      <span class="hint">Password must be at least 8 characters with 1 letter and 1 number.</span>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ CREATE ADMIN</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>
+  `);
+  $('#addAdminForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const perms = [...document.querySelectorAll('#addAdminForm input[type=checkbox]:checked')].map(x => x.value);
+    try {
+      await API.post('/api/admin/admins', {
+        name:     $('#aaName').value,
+        email:    $('#aaEmail').value.toLowerCase(),
+        username: $('#aaUsername').value,
+        password: $('#aaPassword').value,
+        role:     $('#aaRole').value,
+        perms
+      });
+      closeModal(); toast('✓ Admin created', 'ok');
+      renderAdmins();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+});
+
+window.viewAdmin = async id => {
+  let a;
+  try {
+    const { admins } = await API.get('/api/admin/admins');
+    a = admins.find(x => x.id === id);
+  } catch (e) { return toast(e.message, 'err'); }
+  if (!a) return;
+  openModal(`
+    <h3>🛡️ Admin Details</h3>
+    <p class="sub">Complete record for <strong style="color:#E8434A">${a.name}</strong></p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr><td style="padding:10px 0;color:#C9C6C0;font-weight:700;width:40%;border-bottom:1px solid rgba(255,255,255,.08)">Admin ID</td><td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)"><code>${a.id}</code></td></tr>
+      <tr><td style="padding:10px 0;color:#C9C6C0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">Name</td><td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">${a.name}</td></tr>
+      <tr><td style="padding:10px 0;color:#C9C6C0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">Email</td><td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">${a.email}</td></tr>
+      <tr><td style="padding:10px 0;color:#C9C6C0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">Username</td><td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">${a.username || '—'}</td></tr>
+      <tr><td style="padding:10px 0;color:#C9C6C0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">Role</td><td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)"><span class="ap-tag admin">${a.role}</span></td></tr>
+      <tr><td style="padding:10px 0;color:#C9C6C0;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">Permissions</td><td style="padding:10px 0;color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)">${(a.perms||[]).join(', ') || '—'}</td></tr>
+    </table>
+    <div class="actions" style="margin-top:18px">
+      <button class="ap-btn blue" onclick="closeModal();editAdmin('${a.id}')">✏ EDIT</button>
+      <button class="ap-btn ghost" onclick="closeModal()">CLOSE</button>
+    </div>
+  `);
+};
+
+window.editAdmin = async id => {
+  let a;
+  try {
+    const { admins } = await API.get('/api/admin/admins');
+    a = admins.find(x => x.id === id);
+  } catch (e) { return toast(e.message, 'err'); }
+  if (!a) return;
+  openModal(`
+    <h3>✏ Edit Admin</h3>
+    <p class="sub">Update details for <strong>${a.name}</strong>.</p>
+    <form class="ap-form" id="editAdminForm">
+      <div><label>Name</label><input id="eaName" value="${a.name || ''}" required></div>
+      <div><label>Email</label><input id="eaEmail" type="email" value="${a.email || ''}" required></div>
+      <div><label>Role</label>
+        <select id="eaRole">
+          <option ${a.role === 'Super Admin'    ? 'selected' : ''}>Super Admin</option>
+          <option ${a.role === 'Content Editor' ? 'selected' : ''}>Content Editor</option>
+          <option ${a.role === 'Membership'     ? 'selected' : ''}>Membership</option>
+          <option ${a.role === 'Events Manager' ? 'selected' : ''}>Events Manager</option>
+          <option ${a.role === 'Read Only'      ? 'selected' : ''}>Read Only</option>
+        </select>
+      </div>
+      <div>
+        <label>Permissions</label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;padding:14px;background:rgba(0,0,0,.3);border-radius:10px">
+          ${ALL_PERMS.map(p => `<label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;text-transform:capitalize;letter-spacing:0;color:#E5E5EA">
+            <input type="checkbox" value="${p}" style="width:auto" ${(a.perms||[]).includes(p) || (a.perms||[]).includes('all') ? 'checked' : ''}> ${p}
+          </label>`).join('')}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ SAVE CHANGES</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>`);
+  $('#editAdminForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const perms = [...document.querySelectorAll('#editAdminForm input[type=checkbox]:checked')].map(x => x.value);
+    try {
+      await API.put(`/api/admin/admins/${id}`, {
+        name: $('#eaName').value, email: $('#eaEmail').value,
+        role: $('#eaRole').value, perms
+      });
+      closeModal(); toast('✓ Admin updated', 'ok'); renderAdmins();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+};
+
+window.deleteAdmin = async id => {
+  if (!confirm('⚠ Remove this admin? They will lose all access.')) return;
+  try {
+    await API.del(`/api/admin/admins/${id}`);
+    toast('✓ Admin removed', 'ok'); renderAdmins();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ============================================================
+   DATABASE — DBMS-style viewer
+============================================================ */
+let dbCache = {};
+
+async function loadDbTable(table){
+  switch(table){
+    case 'members':       return (await API.get('/api/admin/members')).members || [];
+    case 'admins':        return (await API.get('/api/admin/admins')).admins || [];
+    case 'events':        return (await API.get('/api/admin/events')).events || [];
+    case 'practices':     return (await API.get('/api/practices')).practices || [];
+    case 'apologies':     return (await API.get('/api/admin/apologies')).apologies || [];
+    case 'suggestions':   return (await API.get('/api/admin/suggestions')).suggestions || [];
+    case 'content':       return (await API.get('/api/admin/content')).content || [];
+    case 'announcements': return (await API.get('/api/admin/announcements')).announcements || [];
+    case 'messages':      return (await API.get('/api/admin/messages')).messages || [];
+    case 'activity':      return (await API.get('/api/admin/activity')).activity || [];
+  }
+  return [];
+}
+
+async function renderDatabase(){
+  const table = $('#dbTableSelect').value;
+  const search = ($('#dbSearch').value || '').trim().toLowerCase();
+  const thead = $('#dbTableHead');
+  const tbody = $('#dbTableBody');
+  const count = $('#dbCount');
+
+  tbody.innerHTML = '<tr><td colspan="20"><div class="ap-empty">Loading records…</div></td></tr>';
+
+  try {
+    let rows = await loadDbTable(table);
+    dbCache[table] = rows;
+
+    if (search){
+      rows = rows.filter(r =>
+        Object.values(r).some(v =>
+          v != null && String(v).toLowerCase().includes(search)
+        )
+      );
+    }
+
+    count.innerHTML = `Showing <strong>${rows.length}</strong> record${rows.length !== 1 ? 's' : ''}`;
+
+    if (!rows.length){
+      thead.innerHTML = '';
+      tbody.innerHTML = '<tr><td colspan="20"><div class="ap-empty">No records found.</div></td></tr>';
+      return;
+    }
+
+    const allKeys = new Set();
+    rows.forEach(r => Object.keys(r).forEach(k => allKeys.add(k)));
+    const cols = [...allKeys];
+
+    thead.innerHTML = `<tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr>`;
+
+    tbody.innerHTML = rows.map(r => `
+      <tr>${cols.map(c => {
+        let v = r[c];
+        if (v === null || v === undefined) return `<td style="color:#666">NULL</td>`;
+        if (typeof v === 'boolean') return `<td>${v ? '✓ true' : '✗ false'}</td>`;
+        if (typeof v === 'object') return `<td><code>${JSON.stringify(v).slice(0,60)}…</code></td>`;
+        if (c === 'id' || c === 'Id') return `<td><code>${v}</code></td>`;
+        if (c === 'status') return `<td><span class="ap-tag ${v}">${v}</span></td>`;
+        if (typeof v === 'string' && v.startsWith('data:image')) return `<td><img class="avatar" src="${v}"></td>`;
+        const s = String(v);
+        return `<td>${s.length > 60 ? s.slice(0,60) + '…' : s}</td>`;
+      }).join('')}</tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="20"><div class="ap-empty">${e.message}</div></td></tr>`;
+  }
+}
+
+$('#dbTableSelect').addEventListener('change', renderDatabase);
+$('#dbSearch').addEventListener('input', () => {
+  clearTimeout(window.__dbTimer);
+  window.__dbTimer = setTimeout(renderDatabase, 250);
+});
+
+window.exportDbTable = () => {
+  const table = $('#dbTableSelect').value;
+  const rows = dbCache[table] || [];
+  if (!rows.length){ toast('No data to export', 'err'); return; }
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+  const csv = [cols.join(',')].concat(
+    rows.map(r => cols.map(c => {
+      let v = r[c];
+      if (v == null) return '""';
+      if (typeof v === 'object') return `"${JSON.stringify(v).replace(/"/g,'""')}"`;
+      return `"${String(v).replace(/"/g,'""')}"`;
+    }).join(','))
+  ).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `gco-db-${table}-${Date.now()}.csv`;
+  a.click();
+  toast(`✓ Exported ${table}`, 'ok');
+};
+
+/* ============================================================
+   EVENTS
+============================================================ */
+async function renderEvents(){
+  const wrap = $('#eventsList');
+  try {
+    const { events } = await API.get('/api/admin/events');
+    if (!events.length){
+      wrap.innerHTML = '<div class="ap-empty">No events yet. Create one above.</div>';
+      return;
+    }
+    wrap.innerHTML = events.map(e => `
+      <div class="ap-card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h3>${e.title}</h3>
+            <p class="sub">${fmtDate(e.date)} · ${e.venue}</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+              <span class="ap-tag approved">${e.sold || 0}/${e.capacity} sold</span>
+              <span class="ap-tag member">P${e.price} per ticket</span>
+              <span class="ap-tag admin">P${(e.sold || 0) * e.price} revenue</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="ap-btn small ghost" onclick="generateTicket('${e.id}')">🎟 QR TICKET</button>
+            <button class="ap-btn small blue" onclick="editEvent('${e.id}')">EDIT</button>
+            <button class="ap-btn small danger" onclick="deleteEvent('${e.id}')">DELETE</button>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+window.generateTicket = async id => {
+  try {
+    const { ticketId, payload, event } = await API.post(`/api/admin/events/${id}/ticket`, {});
+    openModal(`
+      <h3>🎟 Ticket Generated</h3>
+      <p class="sub">Scan the QR code at the venue entrance.</p>
+      <div class="ap-qr-preview">
+        <canvas id="qrCanvas"></canvas>
+        <strong style="color:#C11B26;font-size:16px;letter-spacing:.08em">${ticketId}</strong>
+        <small>${event.title} · ${fmtDate(event.date)} · ${event.venue}</small>
+      </div>
+      <div class="actions" style="margin-top:18px">
+        <button class="ap-btn" onclick="window.print()">PRINT</button>
+        <button class="ap-btn ghost" onclick="closeModal()">CLOSE</button>
+      </div>`);
+    setTimeout(() => {
+      QRCode.toCanvas($('#qrCanvas'), JSON.stringify(payload),
+        { width:180, margin:1, color:{ dark:'#C11B26', light:'#ffffff' } });
+    }, 50);
+    renderEvents();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+window.editEvent = async id => {
+  let ev;
+  try {
+    const { events } = await API.get('/api/admin/events');
+    ev = events.find(x => x.id === id);
+  } catch (e) { return toast(e.message, 'err'); }
+  if (!ev) return;
+  openModal(`
+    <h3>✏ Edit Event</h3>
+    <form class="ap-form" id="editEventForm">
+      <div><label>Title</label><input id="eeTitle" value="${ev.title}" required></div>
+      <div class="row">
+        <div><label>Date</label><input id="eeDate" type="date" value="${(ev.date || '').slice(0,10)}" required></div>
+        <div><label>Venue</label><input id="eeVenue" value="${ev.venue}" required></div>
+      </div>
+      <div class="row">
+        <div><label>Capacity</label><input id="eeCap" type="number" value="${ev.capacity}" required></div>
+        <div><label>Ticket Price (P)</label><input id="eePrice" type="number" value="${ev.price}" required></div>
+      </div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ SAVE</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>`);
+  $('#editEventForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.put(`/api/admin/events/${id}`, {
+        title: $('#eeTitle').value, date: $('#eeDate').value,
+        venue: $('#eeVenue').value, capacity: +$('#eeCap').value, price: +$('#eePrice').value
+      });
+      closeModal(); toast('✓ Event updated', 'ok'); renderEvents();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+};
+
+window.deleteEvent = async id => {
+  if (!confirm('Delete this event?')) return;
+  try {
+    await API.del(`/api/admin/events/${id}`);
+    toast('✓ Event deleted', 'ok'); renderEvents();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+$('#addEventBtn').addEventListener('click', () => {
+  openModal(`
+    <h3>➕ Create Event</h3>
+    <form class="ap-form" id="addEventForm">
+      <div><label>Title</label><input id="neTitle" required placeholder="Winter Concert 2026"></div>
+      <div class="row">
+        <div><label>Date</label><input id="neDate" type="date" required></div>
+        <div><label>Venue</label><input id="neVenue" required placeholder="GICC, Gaborone"></div>
+      </div>
+      <div class="row">
+        <div><label>Capacity</label><input id="neCap" type="number" value="200" required></div>
+        <div><label>Ticket Price (P)</label><input id="nePrice" type="number" value="100" required></div>
+      </div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ CREATE</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>`);
+  $('#addEventForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.post('/api/admin/events', {
+        title: $('#neTitle').value, date: $('#neDate').value,
+        venue: $('#neVenue').value, capacity: +$('#neCap').value, price: +$('#nePrice').value
+      });
+      closeModal(); toast('✓ Event created', 'ok'); renderEvents();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+});
+
+/* ============================================================
+   CONTENT
+============================================================ */
+async function renderContent(){
+  const wrap = $('#contentList');
+  try {
+    const { content } = await API.get('/api/admin/content');
+    if (!content.length){
+      wrap.innerHTML = '<div class="ap-empty">No content published yet.</div>';
+      return;
+    }
+    wrap.innerHTML = content.map(c => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:0">
+          <strong style="font-size:15px;color:#fff">${c.title}</strong>
+          <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+            <span class="ap-tag member">${c.type}</span>
+            <span class="ap-tag ${c.status === 'published' ? 'approved' : 'pending'}">${c.status}</span>
+            <small style="color:#C9C6C0;font-weight:600">${fmtDate(c.date)}</small>
+          </div>
+        </div>
+        <div><button class="ap-btn small danger" onclick="deleteContent('${c.id}')">DELETE</button></div>
+      </div>`).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+$('#contentForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  try {
+    await API.post('/api/admin/content', {
+      type: $('#cType').value, title: $('#cTitle').value,
+      body: $('#cBody').value, tags: $('#cTags').value, status: $('#cPublish').value
+    });
+    e.target.reset();
+    toast('✓ Content saved', 'ok');
+    renderContent();
+  } catch (err) { toast(err.message, 'err'); }
+});
+
+window.deleteContent = async id => {
+  if (!confirm('Delete this content?')) return;
+  try {
+    await API.del(`/api/admin/content/${id}`);
+    toast('✓ Content deleted', 'ok'); renderContent();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ============================================================
+   ANNOUNCEMENTS
+============================================================ */
+async function renderAnnouncements(){
+  const wrap = $('#announceList');
+  try {
+    const { announcements } = await API.get('/api/admin/announcements');
+    if (!announcements.length){
+      wrap.innerHTML = '<div class="ap-empty">No announcements sent yet.</div>';
+      return;
+    }
+    wrap.innerHTML = announcements.map(a => `
+      <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <strong style="color:#fff;font-size:15px">${a.subject}</strong>
+          <small style="color:#C9C6C0;font-weight:600">${a.at}</small>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="ap-tag member">${a.audience}</span>
+          <span class="ap-tag ${a.priority === 'Urgent' ? 'rejected' : a.priority === 'Important' ? 'pending' : 'approved'}">${a.priority}</span>
+        </div>
+        <p style="margin-top:8px;font-size:13.5px;color:#C9C6C0;line-height:1.55">${a.message}</p>
+      </div>`).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+$('#announceForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  try {
+    await API.post('/api/admin/announcements', {
+      audience: $('#aAudience').value, priority: $('#aPriority').value,
+      subject: $('#aSubject').value, message: $('#aMessage').value
+    });
+    e.target.reset();
+    toast('✓ Announcement sent', 'ok');
+    renderAnnouncements();
+  } catch (err) { toast(err.message, 'err'); }
+});
+
+/* ============================================================
+   MESSAGES
+============================================================ */
+async function renderMessages(){
+  const wrap = $('#messagesList');
+  try {
+    const { messages } = await API.get('/api/admin/messages');
+    if (!messages.length){
+      wrap.innerHTML = '<div class="ap-empty">No messages.</div>';
+      return;
+    }
+    wrap.innerHTML = messages.map(m => `
+      <div style="padding:16px;border-bottom:1px solid rgba(255,255,255,.08);${!m.read ? 'background:rgba(232,67,74,.06)' : ''}">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <strong style="color:#fff;font-size:15px">${m.from} — ${m.subject}</strong>
+          <small style="color:#C9C6C0;font-weight:600">${m.date}</small>
+        </div>
+        <p style="margin-top:8px;font-size:13.5px;color:#C9C6C0;line-height:1.55">${m.body}</p>
+        ${!m.read ? `<button class="ap-btn small ghost" onclick="markRead('${m.id}')" style="margin-top:10px">MARK AS READ</button>` : ''}
+      </div>`).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+window.markRead = async id => {
+  try {
+    await API.put(`/api/admin/messages/${id}/read`, {});
+    toast('✓ Marked as read', 'ok'); renderMessages();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ============================================================
+   ACTIVITY LOG
+============================================================ */
+async function renderFullLog(){
+  const wrap = $('#fullLog');
+  if (!wrap) return;
+  try {
+    let { activity } = await API.get('/api/admin/activity');
+    if (currentLogFilter !== 'all') activity = activity.filter(x => x.type === currentLogFilter);
+    if (currentLogSearch){
+      const q = currentLogSearch.toLowerCase();
+      activity = activity.filter(x =>
+        (x.who    || '').toLowerCase().includes(q) ||
+        (x.action || '').toLowerCase().includes(q));
+    }
+    if (!activity.length){
+      wrap.innerHTML = '<div class="ap-empty">No matching activity.</div>';
+      return;
+    }
+    wrap.innerHTML = activity.map(logItemHTML).join('');
+  } catch (e) {
+    wrap.innerHTML = '<div class="ap-empty">Could not load activity log.</div>';
+  }
+}
+
+function logItemHTML(x){
+  const labels = { admin:'Admin action', member:'Member action', system:'System event',
+                   success:'Success',     danger:'Alert' };
+  return `<div class="ap-log-item ${x.type || 'admin'}">
+    <div class="icon">${x.icon || '•'}</div>
+    <div class="body">
+      <strong>${x.who} — ${x.action}</strong>
+      <small>${labels[x.type] || x.type || ''}</small>
+    </div>
+    <time>${x.at || ''}</time>
+  </div>`;
+}
+
+let currentLogFilter = 'all';
+let currentLogSearch = '';
+
+$$('#logFilters button').forEach(b => b.addEventListener('click', () => {
+  $$('#logFilters button').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  currentLogFilter = b.dataset.filter;
+  renderFullLog();
+}));
+
+document.addEventListener('input', e => {
+  if (e.target && e.target.id === 'logSearch'){
+    currentLogSearch = e.target.value;
+    renderFullLog();
+  }
+});
+
+async function clearLogs(){
+  if (!confirm('Clear entire activity log? This cannot be undone.')) return;
+  try {
+    await API.del('/api/admin/activity');
+    await renderFullLog();
+    await renderActivity();
+    toast('✓ Activity log cleared', 'ok');
+  } catch (e) { toast(e.message, 'err'); }
+}
+window.clearLogs = clearLogs;
+
+async function exportLogs(){
+  try {
+    const { activity } = await API.get('/api/admin/activity');
+    const csv = 'Timestamp,Type,Actor,Action\n' + activity.map(x =>
+      `"${x.at}","${x.type}","${x.who}","${(x.action || '').replace(/"/g,'""')}"`
+    ).join('\n');
+    const blob = new Blob([csv], { type:'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `gco-activity-log-${Date.now()}.csv`;
+    a.click();
+    toast('✓ Activity log exported', 'ok');
+  } catch (e) { toast(e.message, 'err'); }
+}
+window.exportLogs = exportLogs;
+
+/* ============================================================
+   REPORTS
+============================================================ */
+async function renderReports(){
+  try {
+    const [m, e] = await Promise.all([
+      API.get('/api/admin/members').catch(() => ({ members: [] })),
+      API.get('/api/admin/events').catch(()  => ({ events: [] }))
+    ]);
+    const members = m.members || [];
+    const events  = e.events  || [];
+    const approved = members.filter(x => x.status === 'approved').length;
+    const rate = members.length ? Math.round((approved / members.length) * 100) : 0;
+    const rev = events.reduce((s, x) => s + (x.sold || 0) * (x.price || 0), 0);
+    $('#kpiApprove').textContent = rate + '%';
+    $('#kpiRevenue').textContent = 'P' + rev.toLocaleString();
+    $('#kpiActive').textContent  = approved;
+  } catch (err) { console.error(err); }
+}
+
+window.downloadReport = async type => {
+  try {
+    const { rows } = await API.get(`/api/admin/reports/${type}`);
+    if (!rows || !rows.length){ toast('No data available', 'err'); return; }
+    const headers = Object.keys(rows[0]);
+    const csv = [headers.join(',')].concat(
+      rows.map(r => headers.map(h => {
+        const v = r[h];
+        if (v == null) return '""';
+        if (typeof v === 'object') return `"${JSON.stringify(v).replace(/"/g,'""')}"`;
+        return `"${String(v).replace(/"/g,'""')}"`;
+      }).join(','))
+    ).join('\n');
+    const blob = new Blob([csv], { type:'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `gco-${type}-report-${Date.now()}.csv`;
+    a.click();
+    toast(`✓ ${type} report downloaded`, 'ok');
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+async function renderSettings(){
+  try {
+    const { me } = await API.get('/api/admin/settings');
+    $('#sName').value   = me.name || '';
+    $('#sEmail').value  = me.email || '';
+    $('#sAvatar').value = me.avatar || '';
+  } catch (e) { console.error(e); }
+}
+
+$('#settingsForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  try {
+    await API.put('/api/admin/settings', {
+      name: $('#sName').value, avatar: $('#sAvatar').value
+    });
+    toast('✓ Profile updated', 'ok');
+    renderMe();
+  } catch (err) { toast(err.message, 'err'); }
+});
+
+/* ============================================================
+   LOGOUT + MODAL
+============================================================ */
+$('#logoutBtn').addEventListener('click', async () => {
+  try { await API.post('/api/auth/logout', {}); } catch {}
+  sessionStorage.removeItem('gcoSession');
+  sessionStorage.removeItem('gcoOfflineRole');
+  setTimeout(() => location.href = 'portal.html', 250);
+});
+
+function openModal(html){ $('#modalBox').innerHTML = html; $('#modal').classList.add('show'); }
+function closeModal(){ $('#modal').classList.remove('show'); }
+window.openModal = openModal; window.closeModal = closeModal;
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+/* ══════════════════════════════════════════════════════════════
+   PHASE 2 — PRACTICES + ATTENDANCE + APOLOGIES
+   ══════════════════════════════════════════════════════════════ */
+
+let currentPractice = null;
+let attendanceState = {};
+
+async function renderPractices(){
+  const wrap = $('#practicesList');
+  if (!wrap) return;
+  try {
+    const { practices } = await API.get('/api/practices');
+    if (!practices.length){
+      wrap.innerHTML = '<div class="ap-empty">No practices yet. Click "Create Practice" to add one.</div>';
+      return;
+    }
+    wrap.innerHTML = practices.map(p => {
+      const total    = (p.attendance || []).length;
+      const marked   = (p.attendance || []).filter(a => a.status && a.status !== 'unmarked').length;
+      const present  = (p.attendance || []).filter(a => a.status === 'present').length;
+      const absent   = (p.attendance || []).filter(a => a.status === 'absent').length;
+      const apology  = (p.attendance || []).filter(a => a.status === 'apology').length;
+
+      return `
+        <div class="ap-practice-card">
+          <div class="head">
+            <div style="flex:1;min-width:0">
+              <h4>${p.title}</h4>
+              <div class="meta">
+                📅 ${fmtDate(p.date)}${p.time ? ' · 🕐 ' + p.time : ''}${p.venue ? ' · 📍 ' + p.venue : ''}
+                ${p.section ? ' · 🎼 ' + p.section : ''}
+              </div>
+              ${p.notes ? `<p style="color:#C9C6C0;font-size:13px;line-height:1.55;margin:0">${p.notes}</p>` : ''}
+              <div class="badges">
+                <span class="ap-tag member">${total} members</span>
+                <span class="ap-tag approved">${present} present</span>
+                <span class="ap-tag rejected">${absent} absent</span>
+                <span class="ap-tag pending">${apology} apologies</span>
+                <span class="ap-tag ${marked === total && total > 0 ? 'approved' : 'pending'}">${marked}/${total} marked</span>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="ap-btn small blue" onclick="openAttendance('${p.id}')">✅ MARK ATTENDANCE</button>
+              <button class="ap-btn small ghost" onclick="editPractice('${p.id}')">EDIT</button>
+              <button class="ap-btn small danger" onclick="deletePractice('${p.id}')">DELETE</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+$('#addPracticeBtn')?.addEventListener('click', () => {
+  openModal(`
+    <h3>➕ Create Practice Session</h3>
+    <p class="sub">New practice will auto-generate an attendance list for all approved members.</p>
+    <form class="ap-form" id="addPracticeForm">
+      <div><label>Title *</label><input id="prTitle" required placeholder="Weekly Rehearsal — Strings"></div>
+      <div class="row">
+        <div><label>Date *</label><input id="prDate" type="date" required></div>
+        <div><label>Time</label><input id="prTime" type="time" placeholder="18:00"></div>
+      </div>
+      <div class="row">
+        <div><label>Venue</label><input id="prVenue" placeholder="Thornhill Primary School"></div>
+        <div><label>Section</label>
+          <select id="prSection">
+            <option>All</option>
+            <option>Strings</option>
+            <option>Woodwinds</option>
+            <option>Brass</option>
+            <option>Percussion</option>
+            <option>Keyboard</option>
+            <option>Vocals</option>
+          </select>
+        </div>
+      </div>
+      <div><label>Notes</label><textarea id="prNotes" placeholder="What to bring, what to practice, etc."></textarea></div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ CREATE PRACTICE</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>
+  `);
+  $('#addPracticeForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.post('/api/admin/practices', {
+        title: $('#prTitle').value,
+        date: $('#prDate').value,
+        time: $('#prTime').value,
+        venue: $('#prVenue').value,
+        section: $('#prSection').value,
+        notes: $('#prNotes').value
+      });
+      closeModal();
+      toast('✓ Practice created', 'ok');
+      renderPractices();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+});
+
+window.editPractice = async id => {
+  let p;
+  try {
+    const { practices } = await API.get('/api/practices');
+    p = practices.find(x => x.id === id);
+  } catch (e) { return toast(e.message, 'err'); }
+  if (!p) return;
+
+  openModal(`
+    <h3>✏ Edit Practice</h3>
+    <form class="ap-form" id="editPracticeForm">
+      <div><label>Title</label><input id="epTitle" value="${p.title || ''}" required></div>
+      <div class="row">
+        <div><label>Date</label><input id="epDate" type="date" value="${(p.date || '').slice(0,10)}" required></div>
+        <div><label>Time</label><input id="epTime" type="time" value="${p.time || ''}"></div>
+      </div>
+      <div class="row">
+        <div><label>Venue</label><input id="epVenue" value="${p.venue || ''}"></div>
+        <div><label>Section</label>
+          <select id="epSection">
+            <option ${p.section === 'All'         ? 'selected' : ''}>All</option>
+            <option ${p.section === 'Strings'     ? 'selected' : ''}>Strings</option>
+            <option ${p.section === 'Woodwinds'   ? 'selected' : ''}>Woodwinds</option>
+            <option ${p.section === 'Brass'       ? 'selected' : ''}>Brass</option>
+            <option ${p.section === 'Percussion'  ? 'selected' : ''}>Percussion</option>
+            <option ${p.section === 'Keyboard'    ? 'selected' : ''}>Keyboard</option>
+            <option ${p.section === 'Vocals'      ? 'selected' : ''}>Vocals</option>
+          </select>
+        </div>
+      </div>
+      <div><label>Notes</label><textarea id="epNotes">${p.notes || ''}</textarea></div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ SAVE</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>
+  `);
+  $('#editPracticeForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.put(`/api/admin/practices/${id}`, {
+        title: $('#epTitle').value,
+        date: $('#epDate').value,
+        time: $('#epTime').value,
+        venue: $('#epVenue').value,
+        section: $('#epSection').value,
+        notes: $('#epNotes').value
+      });
+      closeModal(); toast('✓ Practice updated', 'ok'); renderPractices();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+};
+
+window.deletePractice = async id => {
+  if (!confirm('Delete this practice and its attendance record?')) return;
+  try {
+    await API.del(`/api/admin/practices/${id}`);
+    toast('✓ Practice deleted', 'ok');
+    renderPractices();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+window.openAttendance = id => {
+  $$('#adminNav button').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-panel="attendance"]')?.classList.add('active');
+  $$('.ap-panel').forEach(x => x.classList.remove('active'));
+  $('#panel-attendance')?.classList.add('active');
+  $('#panelTitle').innerHTML = 'Attendance <em>Details</em>';
+
+  loadPracticesIntoSelect().then(() => {
+    $('#attendancePracticeSelect').value = id;
+    loadAttendanceForPractice(id);
+  });
+};
+
+async function loadPracticesIntoSelect(){
+  const sel = $('#attendancePracticeSelect');
+  if (!sel) return;
+  try {
+    const { practices } = await API.get('/api/practices');
+    sel.innerHTML = '<option value="">— Choose a practice —</option>' +
+      practices.map(p => `<option value="${p.id}">${p.title} · ${fmtDate(p.date)}</option>`).join('');
+  } catch (e) { console.error(e); }
+}
+
+$('#attendancePracticeSelect')?.addEventListener('change', e => {
+  const id = e.target.value;
+  if (!id){ 
+    $('#attendanceList').innerHTML = '<div class="ap-empty">Select a practice above to mark attendance.</div>';
+    return;
+  }
+  loadAttendanceForPractice(id);
+});
+
+$('#attendanceFilter')?.addEventListener('change', () => {
+  renderAttendanceList();
+});
+
+async function loadAttendanceForPractice(practiceId){
+  try {
+    const { practices } = await API.get('/api/practices');
+    const p = practices.find(x => x.id === practiceId);
+    if (!p) return;
+    currentPractice = p;
+
+    attendanceState = {};
+    (p.attendance || []).forEach(a => {
+      attendanceState[a.memberId] = { status: a.status || 'unmarked', note: a.note || '' };
+    });
+
+    renderAttendanceList();
+  } catch (e) {
+    $('#attendanceList').innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+function renderAttendanceList(){
+  const wrap = $('#attendanceList');
+  if (!wrap || !currentPractice){ return; }
+
+  const filter = $('#attendanceFilter')?.value || 'all';
+  let list = currentPractice.attendance || [];
+
+  if (filter !== 'all'){
+    list = list.filter(a => (attendanceState[a.memberId]?.status || 'unmarked') === filter);
+  }
+
+  if (!list.length){
+    wrap.innerHTML = '<div class="ap-empty">No members match this filter.</div>';
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div style="margin-bottom:12px;color:#C9C6C0;font-size:13.5px;font-weight:700">
+      ${currentPractice.title} · ${fmtDate(currentPractice.date)}
+      ${currentPractice.time ? ' · ' + currentPractice.time : ''}
+      ${currentPractice.venue ? ' · ' + currentPractice.venue : ''}
+    </div>
+    ${list.map(a => {
+      const st = attendanceState[a.memberId]?.status || 'unmarked';
+      return `
+        <div class="ap-att-row ${st}" data-member="${a.memberId}">
+          <img src="${a.photoData || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.memberName)}&background=0A1128&color=fff`}" alt="">
+          <div class="info">
+            <strong>${a.memberName}</strong>
+            <small>${a.instrument || 'Instrument not set'}</small>
+          </div>
+          <div class="btn-group">
+            <button class="ap-status-btn ${st === 'present' ? 'active' : ''}" data-status="present" onclick="markAttendance('${a.memberId}','present')">✓ Present</button>
+            <button class="ap-status-btn ${st === 'absent'  ? 'active' : ''}" data-status="absent"  onclick="markAttendance('${a.memberId}','absent')">✗ Absent</button>
+            <button class="ap-status-btn ${st === 'late'    ? 'active' : ''}" data-status="late"    onclick="markAttendance('${a.memberId}','late')">⏱ Late</button>
+            <button class="ap-status-btn ${st === 'apology' ? 'active' : ''}" data-status="apology" onclick="markAttendance('${a.memberId}','apology')">🙏 Apology</button>
+          </div>
+        </div>`;
+    }).join('')}
+  `;
+}
+
+window.markAttendance = (memberId, status) => {
+  attendanceState[memberId] = { ...(attendanceState[memberId] || {}), status };
+  const row = document.querySelector(`.ap-att-row[data-member="${memberId}"]`);
+  if (row){
+    row.classList.remove('present','absent','late','apology','unmarked');
+    row.classList.add(status);
+    row.querySelectorAll('.ap-status-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.status === status);
+    });
+  }
+};
+
+window.markAll = status => {
+  if (!currentPractice) return toast('Select a practice first', 'err');
+  const list = currentPractice.attendance || [];
+  const filter = $('#attendanceFilter')?.value || 'all';
+  const targets = filter === 'all' ? list : list.filter(a =>
+    (attendanceState[a.memberId]?.status || 'unmarked') === filter
+  );
+  targets.forEach(a => {
+    attendanceState[a.memberId] = { ...(attendanceState[a.memberId] || {}), status };
+  });
+  renderAttendanceList();
+};
+
+window.saveAttendance = async () => {
+  if (!currentPractice) return toast('Select a practice first', 'err');
+  const payload = Object.entries(attendanceState).map(([memberId, v]) => ({
+    memberId,
+    status: v.status,
+    note: v.note || ''
+  }));
+  try {
+    await API.post(`/api/admin/practices/${currentPractice.id}/attendance`, { attendance: payload });
+    toast('✓ Attendance saved', 'ok');
+    renderPractices();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+window.syncPracticeMembers = async () => {
+  if (!currentPractice) return toast('Select a practice first', 'err');
+  try {
+    const res = await API.post(`/api/admin/practices/${currentPractice.id}/sync-members`, {});
+    toast(`✓ Added ${res.added} new member${res.added === 1 ? '' : 's'}`, 'ok');
+    loadAttendanceForPractice(currentPractice.id);
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+async function renderApologies(){
+  const wrap = $('#apologiesList');
+  if (!wrap) return;
+  try {
+    const { apologies } = await API.get('/api/admin/apologies');
+    if (!apologies.length){
+      wrap.innerHTML = '<div class="ap-empty">No apologies submitted yet.</div>';
+      return;
+    }
+    wrap.innerHTML = apologies.map(a => `
+      <div class="ap-apology-item ${a.status}">
+        <div class="head">
+          <strong>${a.memberName} — ${a.practiceTitle}</strong>
+          <span class="ap-tag ${a.status === 'accepted' ? 'approved' : a.status === 'rejected' ? 'rejected' : 'pending'}">${a.status}</span>
+        </div>
+        <p style="color:#C9C6C0;font-size:12.5px;margin:0">
+          Practice: ${fmtDate(a.practiceDate)} · Submitted: ${fmtDate(a.submittedAt)}
+        </p>
+        <p>${a.reason}</p>
+        <div class="actions">
+          ${a.status === 'pending' ? `
+            <button class="ap-btn small" onclick="reviewApology('${a.id}','accepted')">✓ ACCEPT</button>
+            <button class="ap-btn small danger" onclick="reviewApology('${a.id}','rejected')">✗ REJECT</button>
+          ` : `<span style="color:#C9C6C0;font-size:12.5px;font-weight:700">Reviewed${a.reviewedBy ? ' by ' + a.reviewedBy : ''}</span>`}
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+window.reviewApology = async (id, status) => {
+  try {
+    await API.put(`/api/admin/apologies/${id}`, { status });
+    toast(`✓ Apology ${status}`, 'ok');
+    renderApologies();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PHASE 3 — SUGGESTIONS (admin side)
+   ══════════════════════════════════════════════════════════════ */
+
+let allSuggestions = [];
+let currentSugFilter = 'all';
+
+async function renderSuggestions(){
+  const wrap = $('#suggestionsList');
+  if (!wrap) return;
+  try {
+    const { suggestions } = await API.get('/api/admin/suggestions');
+    allSuggestions = suggestions || [];
+
+    let list = allSuggestions;
+    if (currentSugFilter !== 'all'){
+      list = list.filter(s => s.status === currentSugFilter);
+    }
+
+    if (!list.length){
+      wrap.innerHTML = '<div class="ap-empty">No suggestions match this filter.</div>';
+      return;
+    }
+
+    wrap.innerHTML = list.map(s => {
+      const when = s.submittedAt ? new Date(s.submittedAt).toLocaleString('en-GB', {
+        day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+      }) : '—';
+
+      return `
+        <div class="ap-sug-item ${s.status}">
+          <div class="head">
+            <div class="left">
+              <span class="ap-sug-tag cat">${s.category || 'General'}</span>
+              ${s.anonymous ? '<span class="ap-sug-tag anon">Anonymous</span>' : ''}
+              <span class="ap-sug-tag ${s.status}">${s.status}</span>
+              <strong>${s.title}</strong>
+            </div>
+            <time>${when}</time>
+          </div>
+          <div class="meta">
+            ${s.anonymous ? 'Submitted anonymously' : `From: ${s.memberName} · ${s.memberEmail}`}
+          </div>
+          <p>${s.body}</p>
+          ${s.adminResponse ? `
+            <div class="ap-sug-response">
+              <small>Admin response${s.respondedBy ? ' · ' + s.respondedBy : ''}</small>
+              <p>${s.adminResponse}</p>
+            </div>` : ''}
+          <div class="ap-sug-actions">
+            <button class="ap-btn small blue" onclick="respondToSuggestion('${s.id}')">💬 RESPOND / CHANGE STATUS</button>
+            <button class="ap-btn small danger" onclick="deleteSuggestion('${s.id}')">DELETE</button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="ap-empty">${e.message}</div>`;
+  }
+}
+
+$$('#sugFilters button').forEach(b => b.addEventListener('click', () => {
+  $$('#sugFilters button').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  currentSugFilter = b.dataset.filter;
+  renderSuggestions();
+}));
+
+window.respondToSuggestion = async id => {
+  const s = allSuggestions.find(x => x.id === id);
+  if (!s) return;
+
+  openModal(`
+    <h3>💡 Respond to Suggestion</h3>
+    <p class="sub"><strong style="color:#E8434A">${s.title}</strong></p>
+    <form class="ap-form" id="sugRespondForm">
+      <div>
+        <label>Status</label>
+        <select id="sugStatus">
+          <option value="new"      ${s.status === 'new'      ? 'selected' : ''}>New</option>
+          <option value="reviewed" ${s.status === 'reviewed' ? 'selected' : ''}>Reviewed</option>
+          <option value="planned"  ${s.status === 'planned'  ? 'selected' : ''}>Planned</option>
+          <option value="done"     ${s.status === 'done'     ? 'selected' : ''}>Done</option>
+          <option value="declined" ${s.status === 'declined' ? 'selected' : ''}>Declined</option>
+        </select>
+      </div>
+      <div>
+        <label>Admin Response (visible to member)</label>
+        <textarea id="sugResponse" placeholder="Let the member know what you think, or what will happen next…">${s.adminResponse || ''}</textarea>
+      </div>
+      <div class="actions">
+        <button class="ap-btn" type="submit">✓ SAVE</button>
+        <button class="ap-btn ghost" type="button" onclick="closeModal()">CANCEL</button>
+      </div>
+    </form>
+  `);
+  $('#sugRespondForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    try {
+      await API.put(`/api/admin/suggestions/${id}`, {
+        status: $('#sugStatus').value,
+        adminResponse: $('#sugResponse').value
+      });
+      closeModal(); toast('✓ Suggestion updated', 'ok'); renderSuggestions();
+    } catch (err) { toast(err.message, 'err'); }
+  });
+};
+
+window.deleteSuggestion = async id => {
+  if (!confirm('Delete this suggestion permanently?')) return;
+  try {
+    await API.del(`/api/admin/suggestions/${id}`);
+    toast('✓ Suggestion deleted', 'ok');
+    renderSuggestions();
+  } catch (e) { toast(e.message, 'err'); }
+};
+
+/* ============================================================
+   BOOT
+============================================================ */
+(async function boot(){
+  const ok = await ensureAdminOrRedirect();
+  if (!ok) return;
+  await renderMe();
+  await renderDashboard();
+  await renderMembers();
+  await renderAdmins();
+  await renderDatabase();
+  await renderEvents();
+  await renderContent();
+  await renderAnnouncements();
+  await renderMessages();
+  await renderReports();
+  await renderSettings();
+  await renderFullLog();
+    await renderChat();
+})();
+</script>
+</body>
+</html>

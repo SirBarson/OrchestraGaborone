@@ -1,0 +1,3636 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Member Portal | Gaborone Community Orchestra</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   GCO MEMBER PORTAL — self-contained
+   ═══════════════════════════════════════════════════════════════ */
+
+*,*::before,*::after { box-sizing: border-box; }
+
+/* ─── 1. TOTAL RESET ─── */
+html,
+html body.portal-page,
+body.portal-page,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  background: #0A1128 !important;
+}
+
+body.portal-page {
+  color: #F5F5F7;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide any site chrome */
+body.portal-page > nav,
+body.portal-page > header,
+body.portal-page > footer,
+body.portal-page > .navbar,
+body.portal-page > .site-nav,
+body.portal-page > .topnav,
+body.portal-page > .mobile-menu,
+body.portal-page > .hamburger,
+body.portal-page > .nav-links,
+body.portal-page > #mobileMenu {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -1 !important;
+}
+
+body.portal-page > *:not(#loginView):not(#dashboardView):not(.mp-modal-mask):not(.mp-toast) {
+  display: none !important;
+}
+
+body.portal-page::before,
+body.portal-page::after { content: none !important; display: none !important; }
+body.portal-page > hr,
+body.portal-page > .divider,
+body.portal-page > .staff-divider { display: none !important; }
+
+/* ─── 2. LOGIN VIEW ─── */
+#loginView {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 2;
+}
+#loginView[hidden] { display: none !important; }
+
+.mp-login {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.14);
+  border-radius: 18px;
+  padding: 38px 34px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.55);
+  backdrop-filter: blur(14px);
+}
+.mp-login h1 {
+  font-size: 1.7rem;
+  margin: 0 0 8px;
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  color: #fff;
+}
+.mp-login h1 em { color: #E8434A; font-style: normal; }
+.mp-login > p {
+  color: #C9C6C0;
+  font-size: .92rem;
+  text-align: center;
+  margin: 0 0 22px;
+  line-height: 1.55;
+}
+.mp-login .form-group { margin-bottom: 18px; }
+.mp-login label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #E5E5EA;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.mp-login input {
+  width: 100%;
+  background: rgba(0,0,0,.4);
+  border: 1.5px solid rgba(255,255,255,.16);
+  color: #fff;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 500;
+}
+.mp-login input:focus {
+  outline: none;
+  border-color: #E8434A;
+  box-shadow: 0 0 0 4px rgba(232,67,74,.22);
+  background: rgba(0,0,0,.5);
+}
+.mp-login .submit {
+  width: 100%;
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  border: 0;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  font-size: 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: .18s;
+}
+.mp-login .submit:hover { filter: brightness(1.14); }
+.mp-login .submit:disabled { opacity: .6; cursor: not-allowed; }
+.mp-login .msg {
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-top: 14px;
+  min-height: 20px;
+  color: #FF8B85;
+}
+.mp-login .links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mp-login .links a {
+  color: #C9C6C0;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 700;
+}
+.mp-login .links a:hover { color: #E8434A; }
+
+/* ─── 3. DASHBOARD LAYOUT ─── */
+#dashboardView { display: block; }
+#dashboardView[hidden] { display: none !important; }
+
+.mp-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: linear-gradient(180deg, #050914 0%, #0A1128 60%, #1a0810 100%);
+  border-right: 2px solid rgba(232,67,74,.25);
+  padding: 20px 14px 24px;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform .28s ease;
+}
+.mp-sidebar::-webkit-scrollbar { width: 6px; }
+.mp-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(232,67,74,.5);
+  border-radius: 3px;
+}
+
+.mp-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 6px 8px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: 15px;
+  color: #fff;
+}
+.mp-brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #E8434A;
+  object-fit: cover;
+  background: #111;
+  flex-shrink: 0;
+}
+
+.mp-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mp-nav li { margin: 0; padding: 0; }
+.mp-nav button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: #E5E5EA;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: .18s;
+  font-family: inherit;
+  line-height: 1.35;
+  letter-spacing: .01em;
+  position: relative;
+}
+.mp-nav button:hover {
+  background: rgba(232,67,74,.15);
+  color: #fff;
+  transform: translateX(2px);
+}
+.mp-nav button.active {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(193,27,38,.45);
+  font-weight: 800;
+}
+.mp-nav .ic {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.mp-nav .badge {
+  margin-left: auto;
+  background: #E8434A;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: .04em;
+}
+
+.mp-main {
+  margin-left: 260px;
+  min-height: 100vh;
+  padding: 26px 32px 80px;
+  overflow-x: hidden;
+  width: calc(100% - 260px);
+}
+
+.mp-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 28px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid rgba(232,67,74,.18);
+  flex-wrap: wrap;
+}
+.mp-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+.mp-topbar h1 {
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: -.01em;
+  color: #fff;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mp-topbar h1 em { color: #E8434A; font-style: normal; font-weight: 900; }
+
+.mp-menu-toggle {
+  display: none;
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.18);
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: .18s;
+}
+.mp-menu-toggle:hover {
+  background: rgba(232,67,74,.2);
+  border-color: #E8434A;
+}
+
+.mp-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.14);
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.mp-user img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #E8434A;
+  flex-shrink: 0;
+}
+.mp-user .meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+.mp-user .meta strong {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.mp-user .meta small {
+  font-size: 11px;
+  color: #B8B5B0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.mp-user button {
+  background: none;
+  border: 1.5px solid #E8434A;
+  color: #E8434A;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  cursor: pointer;
+  font-family: inherit;
+  transition: .18s;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.mp-user button:hover { background: #E8434A; color: #fff; }
+
+.mp-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity .28s ease;
+  pointer-events: none;
+}
+.mp-overlay.show { opacity: 1; pointer-events: auto; }
+
+.mp-panel { display: none; animation: mpFadeIn .25s ease; }
+.mp-panel.active { display: block; }
+@keyframes mpFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.mp-card {
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 22px;
+}
+.mp-card h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: #fff;
+  font-weight: 800;
+}
+.mp-card .sub {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+.mp-card .kicker {
+  color: #E8434A;
+  font-size: 11.5px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mp-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  background: linear-gradient(140deg, rgba(232,67,74,.16), rgba(255,255,255,.03));
+  border: 1.5px solid rgba(232,67,74,.32);
+  border-radius: 18px;
+  padding: 28px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .mp-hero { grid-template-columns: 1fr; text-align: center; }
+}
+.mp-hero img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #E8434A;
+  background: #111;
+}
+@media (max-width: 640px) { .mp-hero img { margin: 0 auto; } }
+.mp-hero .info h2 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  color: #fff;
+  font-weight: 900;
+}
+.mp-hero .info .id {
+  color: #E8434A;
+  font-weight: 900;
+  letter-spacing: .1em;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+.mp-hero .info p {
+  margin: 10px 0 0;
+  color: #C9C6C0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.pill.approved { background: rgba(126,226,154,.22); color: #7EE29A; }
+.pill.pending  { background: rgba(255,176,32,.22);  color: #FFC755; }
+.pill.rejected { background: rgba(255,139,133,.22); color: #FF8B85; }
+
+.mp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 640px) { .mp-grid { grid-template-columns: 1fr; } }
+.mp-field {
+  background: rgba(0,0,0,.28);
+  border-radius: 11px;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(255,255,255,.05);
+}
+.mp-field small {
+  display: block;
+  color: #C9C6C0;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.mp-field strong {
+  font-size: 15px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.sig-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  border: 2px solid rgba(232,67,74,.4);
+  overflow: hidden;
+}
+.sig-box img {
+  max-width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+}
+.sig-box .sig-text {
+  font-family: 'Brush Script MT', 'Segoe Script', cursive;
+  font-size: 32px;
+  color: #111;
+}
+
+.mp-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.mp-stat {
+  background: linear-gradient(140deg, rgba(232,67,74,.14), rgba(255,255,255,.03));
+  border: 1.5px solid rgba(232,67,74,.28);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.mp-stat span {
+  display: block;
+  color: #C9C6C0;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.mp-stat strong {
+  display: block;
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.mp-stat small {
+  color: #7EE29A;
+  font-size: 12px;
+  font-weight: 700;
+}
+.mp-stat.warn small  { color: #FFC755; }
+.mp-stat.bad small   { color: #FF8B85; }
+.mp-stat.blue small  { color: #7AB8FF; }
+
+.mp-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+@media (max-width: 1000px) {
+  .mp-chart-row { grid-template-columns: 1fr; }
+}
+
+.mp-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 180px;
+  padding: 14px 0;
+}
+.mp-bar-chart .bar {
+  flex: 1;
+  background: linear-gradient(180deg, #E8434A, #C11B26);
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  min-height: 8px;
+  transition: filter .2s;
+}
+.mp-bar-chart .bar:hover { filter: brightness(1.25); }
+.mp-bar-chart .bar::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #C9C6C0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mp-bar-chart .bar span {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.mp-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+}
+.mp-donut {
+  width: 160px;
+  height: 160px;
+  position: relative;
+  flex-shrink: 0;
+}
+.mp-donut svg { transform: rotate(-90deg); }
+.mp-donut .center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.mp-donut .center strong {
+  font-size: 26px;
+  font-weight: 900;
+  color: #fff;
+}
+.mp-donut .center small {
+  font-size: 11px;
+  color: #C9C6C0;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-weight: 800;
+  margin-top: 3px;
+}
+.mp-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 140px;
+}
+.mp-legend .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+.mp-legend .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.mp-legend .val {
+  margin-left: auto;
+  color: #fff;
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.mp-hbar { display: flex; flex-direction: column; gap: 14px; }
+.mp-hbar .row {
+  display: grid;
+  grid-template-columns: 100px 1fr 60px;
+  gap: 12px;
+  align-items: center;
+}
+.mp-hbar .row .lbl {
+  font-size: 13.5px;
+  color: #E5E5EA;
+  font-weight: 700;
+}
+.mp-hbar .row .track {
+  height: 11px;
+  background: rgba(255,255,255,.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.mp-hbar .row .track .fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #C11B26, #E8434A);
+  transition: width .6s ease;
+}
+.mp-hbar .row .val {
+  font-size: 13.5px;
+  color: #fff;
+  font-weight: 900;
+  text-align: right;
+}
+
+.mp-pie-wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.mp-pie {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(
+    #E8434A 0 40%,
+    #FF8B85 40% 65%,
+    #FFB020 65% 82%,
+    #7AB8FF 82% 100%
+  );
+  box-shadow: 0 0 0 8px rgba(255,255,255,.04), 0 12px 36px rgba(0,0,0,.4);
+  position: relative;
+}
+.mp-pie::after {
+  content: '';
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  background: #0A1128;
+}
+
+.mp-gauge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.mp-gauge {
+  position: relative;
+  flex-shrink: 0;
+}
+.mp-gauge svg { display: block; }
+.mp-gauge-value {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.mp-gauge-value strong {
+  display: block;
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.mp-gauge-value small {
+  font-size: 11px;
+  color: #C9C6C0;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 800;
+}
+.mp-gauge-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 160px;
+}
+.mp-gauge-legend .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #C9C6C0;
+}
+.mp-gauge-legend .row strong {
+  color: #fff;
+  font-weight: 900;
+  margin-left: 4px;
+}
+.mp-gauge-legend .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.mp-line-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+.mp-line-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.mp-line-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 6px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: #C9C6C0;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.mp-heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 640px) {
+  .mp-heatmap { grid-template-columns: repeat(4, 1fr); }
+}
+.hm-day {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.hm-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #C9C6C0;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.hm-cells {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hm-cell {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: rgba(255,255,255,.06);
+}
+.hm-cell[data-level="1"] { background: rgba(232,67,74,.25); }
+.hm-cell[data-level="2"] { background: rgba(232,67,74,.55); }
+.hm-cell[data-level="3"] { background: #E8434A; }
+.hm-cell:hover { filter: brightness(1.3); transform: scale(1.08); }
+
+.hm-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  font-size: 11.5px;
+  color: #C9C6C0;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.mp-form { display: grid; gap: 16px; }
+.mp-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .mp-form-row { grid-template-columns: 1fr; }
+}
+.mp-form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  color: #E5E5EA;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.mp-form input,
+.mp-form textarea,
+.mp-form select {
+  width: 100%;
+  background: rgba(0,0,0,.4);
+  border: 1.5px solid rgba(255,255,255,.16);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.mp-form textarea { min-height: 100px; resize: vertical; }
+.mp-form input:focus,
+.mp-form textarea:focus,
+.mp-form select:focus {
+  outline: none;
+  border-color: #E8434A;
+  box-shadow: 0 0 0 4px rgba(232,67,74,.22);
+  background: rgba(0,0,0,.5);
+}
+.mp-form input:disabled,
+.mp-form textarea:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  background: rgba(0,0,0,.25);
+}
+.mp-form button {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  border: 0;
+  padding: 13px 22px;
+  border-radius: 9px;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: .18s;
+}
+.mp-form button:hover { filter: brightness(1.14); }
+.mp-form button:disabled { opacity: .6; cursor: not-allowed; }
+.mp-form button.ghost {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #E5E5EA;
+}
+.mp-form button.ghost:hover {
+  border-color: #E8434A;
+  color: #E8434A;
+  filter: none;
+}
+.mp-form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.mp-form-note {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 4px;
+  min-height: 20px;
+  color: #7EE29A;
+}
+.mp-form-note.error { color: #FF8B85; }
+
+.mp-announce {
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,.03);
+  border-left: 4px solid #E8434A;
+}
+.mp-announce.important { border-color: #FFB020; }
+.mp-announce.urgent { border-color: #FF8B85; background: rgba(255,139,133,.06); }
+.mp-announce .top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.mp-announce .top strong { font-size: 15px; color: #fff; font-weight: 800; }
+.mp-announce .top time { font-size: 12px; color: #C9C6C0; font-weight: 600; }
+.mp-announce p { margin: 8px 0 0; font-size: 13.5px; color: #C9C6C0; line-height: 1.6; }
+
+.mp-msg {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,.03);
+  border-left: 3px solid #7AB8FF;
+}
+.mp-msg.unread { border-color: #E8434A; background: rgba(232,67,74,.05); }
+.mp-msg .top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.mp-msg .top strong { font-size: 14px; color: #fff; font-weight: 800; }
+.mp-msg .top time { font-size: 12px; color: #C9C6C0; font-weight: 600; }
+.mp-msg p { margin: 4px 0 0; font-size: 13.5px; color: #C9C6C0; line-height: 1.55; }
+
+.mp-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #C9C6C0;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px dashed rgba(255,255,255,.18);
+  border-radius: 14px;
+  line-height: 1.55;
+}
+.mp-empty strong { color: #E8434A; display: block; margin-bottom: 6px; font-size: 15px; }
+.mp-empty .soon {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 14px;
+  background: rgba(232,67,74,.15);
+  color: #E8434A;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.mp-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.mp-modal-mask.show { display: flex; }
+.mp-modal-box {
+  background: #0f1830;
+  border: 1.5px solid rgba(232,67,74,.5);
+  border-radius: 18px;
+  padding: 28px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 40px 100px rgba(0,0,0,.7);
+}
+.mp-modal-box h3 { margin: 0 0 6px; color: #fff; font-size: 20px; font-weight: 900; }
+.mp-modal-box .sub { color: #C9C6C0; font-size: 13.5px; margin-bottom: 16px; }
+.qr-code {
+  background: #fff;
+  color: #000;
+  padding: 16px;
+  border-radius: 12px;
+  display: inline-block;
+  margin: 12px 0;
+}
+.qr-code canvas { display: block; width: 180px; height: 180px; }
+.mp-modal-box small { display: block; color: #C9C6C0; font-size: 12px; margin-top: 8px; font-weight: 600; }
+.mp-modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+.mp-modal-actions button {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  border: 0;
+  padding: 11px 20px;
+  border-radius: 9px;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: inherit;
+}
+.mp-modal-actions button.ghost {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.2);
+  color: #E5E5EA;
+}
+
+.mp-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f1830;
+  color: #fff;
+  border-left: 5px solid #7EE29A;
+  padding: 16px 22px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 700;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  z-index: 2000;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: .25s;
+  max-width: calc(100vw - 48px);
+}
+.mp-toast.show { transform: none; opacity: 1; }
+.mp-toast.err { border-color: #FF8B85; }
+
+@media (max-width: 768px) {
+  .mp-sidebar {
+    transform: translateX(-100%);
+    box-shadow: 4px 0 40px rgba(0,0,0,.6);
+    width: 280px;
+    max-width: 85vw;
+  }
+  .mp-sidebar.open { transform: translateX(0); }
+  .mp-overlay { display: block; }
+  .mp-main {
+    margin-left: 0;
+    width: 100%;
+    padding: 18px 16px 60px;
+  }
+  .mp-menu-toggle { display: flex; }
+  .mp-topbar h1 { font-size: 20px; }
+  .mp-user .meta strong { max-width: 100px; }
+  .mp-user .meta small { font-size: 10px; }
+  .mp-user button { padding: 6px 10px; font-size: 10px; }
+  .mp-stat-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .mp-stat strong { font-size: 22px; }
+  .mp-toast { bottom: 16px; right: 16px; left: 16px; max-width: none; }
+}
+
+@media (max-width: 420px) {
+  .mp-user { padding: 5px 10px 5px 5px; gap: 8px; }
+  .mp-user img { width: 34px; height: 34px; }
+  .mp-user .meta { display: none; }
+  .mp-menu-toggle { width: 40px; height: 40px; font-size: 1.2rem; }
+  .mp-stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mp-stat { padding: 14px; }
+  .mp-stat strong { font-size: 20px; }
+  .mp-stat span { font-size: 11px; }
+  .mp-topbar h1 { font-size: 17px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — PRACTICES + APOLOGIES
+   ═══════════════════════════════════════════════════════════════ */
+
+.mp-practice {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid rgba(232,67,74,.22);
+  transition: .18s;
+}
+.mp-practice:hover { border-color: rgba(232,67,74,.5); }
+@media (max-width: 640px) { .mp-practice { grid-template-columns: 1fr; text-align: left; } }
+
+.mp-practice .date-badge {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  color: #fff;
+  font-weight: 900;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.mp-practice .date-badge .day {
+  display: block;
+  font-size: 22px;
+  letter-spacing: -.03em;
+}
+.mp-practice .date-badge .month {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-top: 3px;
+  opacity: .95;
+}
+.mp-practice .body h4 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 800;
+}
+.mp-practice .body .meta {
+  color: #C9C6C0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+.mp-practice .body .badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.mp-practice .body .badges span {
+  font-size: 10.5px;
+  font-weight: 900;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.mp-practice .body .badges .sec { background: rgba(232,67,74,.18); color: #E8434A; }
+.mp-practice .body .badges .present { background: rgba(126,226,154,.22); color: #7EE29A; }
+.mp-practice .body .badges .absent  { background: rgba(255,139,133,.22); color: #FF8B85; }
+.mp-practice .body .badges .late    { background: rgba(255,176,32,.22);  color: #FFC755; }
+.mp-practice .body .badges .apology { background: rgba(122,184,255,.22); color: #7AB8FF; }
+.mp-practice .body .badges .unmarked{ background: rgba(255,255,255,.08); color: #C9C6C0; }
+
+.mp-practice .actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+@media (max-width: 640px) { .mp-practice .actions { justify-content: flex-start; } }
+.mp-practice .actions button {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  border: 0;
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-weight: 900;
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition: .18s;
+  white-space: nowrap;
+}
+.mp-practice .actions button:hover { filter: brightness(1.14); }
+.mp-practice .actions button.ghost {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #E5E5EA;
+}
+.mp-practice .actions button.ghost:hover { border-color: #E8434A; color: #E8434A; }
+.mp-practice .actions button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.mp-apology-item {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,.03);
+  border-left: 4px solid #FFC755;
+}
+.mp-apology-item.accepted { border-color: #7EE29A; background: rgba(126,226,154,.05); }
+.mp-apology-item.rejected { border-color: #FF8B85; background: rgba(255,139,133,.05); }
+.mp-apology-item .head {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.mp-apology-item .head strong {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+.mp-apology-item .head time {
+  color: #C9C6C0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.mp-apology-item p {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 4px 0 0;
+}
+.mp-apology-item .status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.mp-apology-item .status.pending  { background: rgba(255,176,32,.22); color: #FFC755; }
+.mp-apology-item .status.accepted { background: rgba(126,226,154,.22); color: #7EE29A; }
+.mp-apology-item .status.rejected { background: rgba(255,139,133,.22); color: #FF8B85; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 3 — SUGGESTIONS STYLES (member view)
+   ═══════════════════════════════════════════════════════════════ */
+
+.mp-sug-item {
+  padding: 16px 18px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,.03);
+  border-left: 4px solid #7AB8FF;
+}
+.mp-sug-item.reviewed { border-color: #7AB8FF; }
+.mp-sug-item.planned  { border-color: #FFC755; background: rgba(255,176,32,.05); }
+.mp-sug-item.done     { border-color: #7EE29A; background: rgba(126,226,154,.05); }
+.mp-sug-item.declined { border-color: #FF8B85; background: rgba(255,139,133,.05); }
+.mp-sug-item.new      { border-color: #E8434A; background: rgba(232,67,74,.05); }
+
+.mp-sug-item .head {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.mp-sug-item .head strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  display: block;
+  margin-top: 4px;
+}
+.mp-sug-item .head time {
+  font-size: 12px;
+  color: #C9C6C0;
+  font-weight: 600;
+}
+.mp-sug-cat {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(122,184,255,.22);
+  color: #7AB8FF;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.mp-sug-item p {
+  color: #C9C6C0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 6px 0 0;
+}
+.mp-sug-item .meta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.mp-sug-item .meta-row .status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.mp-sug-response {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(122,184,255,.08);
+  border-left: 3px solid #7AB8FF;
+}
+.mp-sug-response small {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  color: #7AB8FF;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.mp-sug-response p {
+  margin: 0;
+  color: #E5E5EA;
+  font-size: 13.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 4 — CHAT (member side)
+   ═══════════════════════════════════════════════════════════════ */
+
+.mp-chat-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  background: rgba(255,255,255,.03);
+  border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  overflow: hidden;
+  height: calc(100vh - 220px);
+  min-height: 460px;
+}
+
+.mp-chat-sidebar {
+  border-right: 1.5px solid rgba(255,255,255,.1);
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,.15);
+  min-height: 0;
+}
+.mp-chat-sidebar .head {
+  padding: 14px 14px 10px;
+  border-bottom: 1.5px solid rgba(255,255,255,.08);
+}
+.mp-chat-sidebar .head h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 900;
+}
+.mp-chat-sidebar .head small {
+  color: #C9C6C0;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.mp-chat-sidebar .head input {
+  margin-top: 10px;
+  width: 100%;
+  background: rgba(0,0,0,.4);
+  border: 1.5px solid rgba(255,255,255,.15);
+  color: #fff;
+  padding: 8px 11px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.mp-chat-sidebar .head input:focus {
+  outline: none;
+  border-color: #E8434A;
+  box-shadow: 0 0 0 3px rgba(232,67,74,.18);
+}
+
+.mp-chat-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 8px 8px 0;
+  border-bottom: 1.5px solid rgba(255,255,255,.08);
+}
+.mp-chat-tabs button {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: #C9C6C0;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 8px 4px 10px;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: .18s;
+}
+.mp-chat-tabs button:hover { color: #E8434A; }
+.mp-chat-tabs button.active {
+  color: #E8434A;
+  border-bottom-color: #E8434A;
+}
+
+.mp-chat-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  min-height: 0;
+}
+.mp-chat-items::-webkit-scrollbar { width: 5px; }
+.mp-chat-items::-webkit-scrollbar-thumb {
+  background: rgba(232,67,74,.5);
+  border-radius: 3px;
+}
+
+.mp-chat-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 9px;
+  padding: 9px 9px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: .15s;
+  align-items: center;
+}
+.mp-chat-item:hover { background: rgba(255,255,255,.05); }
+.mp-chat-item.active {
+  background: linear-gradient(135deg, rgba(193,27,38,.4), rgba(232,67,74,.25));
+  border: 1px solid rgba(232,67,74,.5);
+}
+.mp-chat-item .avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.mp-chat-item .avatar-wrap img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.1);
+  display: block;
+}
+.mp-chat-item .online-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #555;
+  border: 2px solid #0A1128;
+}
+.mp-chat-item .online-dot.on { background: #7EE29A; box-shadow: 0 0 8px #7EE29A; }
+
+.mp-chat-item .body { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.mp-chat-item .body strong {
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mp-chat-item .body small {
+  color: #A5A29D;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mp-chat-item .badge {
+  background: #E8434A;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 999px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.mp-chat-group-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.mp-chat-conv {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+.mp-chat-conv-head {
+  padding: 12px 16px;
+  border-bottom: 1.5px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: rgba(0,0,0,.2);
+}
+.mp-chat-conv-head img,
+.mp-chat-conv-head .mp-chat-group-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(232,67,74,.5);
+}
+.mp-chat-conv-head .meta { flex: 1; min-width: 0; }
+.mp-chat-conv-head .meta strong {
+  display: block;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mp-chat-conv-head .meta small {
+  display: block;
+  color: #C9C6C0;
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.mp-chat-conv-head .meta small.online { color: #7EE29A; }
+
+.mp-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.mp-chat-body::-webkit-scrollbar { width: 5px; }
+.mp-chat-body::-webkit-scrollbar-thumb {
+  background: rgba(232,67,74,.5);
+  border-radius: 3px;
+}
+
+.mp-chat-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 76%;
+  gap: 2px;
+}
+.mp-chat-msg.mine { align-self: flex-end; align-items: flex-end; }
+.mp-chat-msg .bubble {
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.mp-chat-msg.theirs .bubble {
+  background: rgba(255,255,255,.08);
+  color: #F5F5F7;
+  border-bottom-left-radius: 4px;
+}
+.mp-chat-msg.mine .bubble {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.mp-chat-msg .bubble.admin-bubble {
+  background: linear-gradient(135deg, #0b4b8a, #7AB8FF);
+  color: #04223f;
+}
+.mp-chat-msg .bubble.mention {
+  background: linear-gradient(135deg, #6b4c00, #FFC755);
+  color: #2b1e00;
+}
+.mp-chat-msg .meta {
+  font-size: 10.5px;
+  color: #A5A29D;
+  font-weight: 700;
+  padding: 0 6px;
+}
+.mp-chat-msg .sender {
+  font-size: 11.5px;
+  color: #E8434A;
+  font-weight: 900;
+  padding: 0 6px;
+}
+.mp-chat-msg .sender.admin-tag { color: #7AB8FF; }
+
+.mp-chat-compose {
+  border-top: 1.5px solid rgba(255,255,255,.08);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(0,0,0,.2);
+}
+.mp-chat-compose .row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.mp-chat-compose textarea {
+  flex: 1;
+  background: rgba(0,0,0,.4);
+  border: 1.5px solid rgba(255,255,255,.15);
+  color: #fff;
+  padding: 10px 13px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 500;
+  resize: none;
+  min-height: 42px;
+  max-height: 110px;
+  line-height: 1.4;
+}
+.mp-chat-compose textarea:focus {
+  outline: none;
+  border-color: #E8434A;
+  box-shadow: 0 0 0 3px rgba(232,67,74,.18);
+}
+.mp-chat-compose .send-btn {
+  background: linear-gradient(135deg, #C11B26, #E8434A);
+  border: 0;
+  color: #fff;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  transition: .15s;
+}
+.mp-chat-compose .send-btn:hover { filter: brightness(1.15); }
+
+.mp-chat-typing {
+  font-size: 11px;
+  color: #7AB8FF;
+  font-weight: 700;
+  min-height: 14px;
+  padding-left: 4px;
+}
+
+.mp-chat-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #A5A29D;
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: center;
+  padding: 30px 16px;
+  gap: 6px;
+}
+.mp-chat-empty .big { font-size: 2.5rem; opacity: .4; }
+
+.mp-chat-mention-hint {
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  right: 12px;
+  background: #0f1830;
+  border: 1.5px solid rgba(232,67,74,.5);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.6);
+  padding: 6px;
+  margin-bottom: 8px;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.mp-chat-mention-hint.show { display: block; }
+.mp-chat-mention-hint .mention-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mp-chat-mention-hint .mention-item:hover,
+.mp-chat-mention-hint .mention-item.active {
+  background: rgba(232,67,74,.25);
+}
+.mp-chat-mention-hint .mention-item img {
+  width: 24px; height: 24px; border-radius: 50%; object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .mp-chat-shell { grid-template-columns: 1fr; height: calc(100vh - 170px); }
+  .mp-chat-sidebar { display: none; }
+  .mp-chat-shell.show-list .mp-chat-sidebar { display: flex; }
+  .mp-chat-shell.show-list .mp-chat-conv { display: none; }
+  .mp-chat-msg { max-width: 88%; }
+  .mp-chat-mobile-back {
+    display: flex !important;
+    background: transparent;
+    border: 0;
+    color: #E8434A;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+  }
+}
+.mp-chat-mobile-back { display: none; }
+
+</style>
+</head>
+<body class="portal-page">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LOGIN VIEW
+     ═══════════════════════════════════════════════════════════════ -->
+<main id="loginView">
+  <div class="mp-login">
+    <h1>Member <em>Portal</em></h1>
+    <p>Sign in to view your profile, attendance, practices, and messages from the orchestra.</p>
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Your password">
+      </div>
+      <button class="submit" id="loginSubmit" type="submit">SIGN IN</button>
+      <p class="msg" id="loginMessage"></p>
+    </form>
+    <div class="links">
+      <a href="register.html">New member application →</a>
+      <a href="reset-password.html">Forgot password?</a>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DASHBOARD VIEW
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="dashboardView" hidden>
+
+  <div class="mp-overlay" id="mpOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="mp-sidebar" id="mpSidebar" role="navigation" aria-label="Member menu">
+    <div class="mp-brand">
+      <img src="assets/images/logo.png" alt="GCO"
+        onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2218%22 fill=%22%23C11B26%22/><text x=%2220%22 y=%2227%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22>G</text></svg>'">
+      <span>GCO Member</span>
+    </div>
+    <ul class="mp-nav" id="memberNav">
+      <li><button data-panel="overview" class="active"><span class="ic">📋</span> Overview</button></li>
+      <li><button data-panel="attendance"><span class="ic">✅</span> Attendance</button></li>
+      <li><button data-panel="practices"><span class="ic">🎼</span> Practices</button></li>
+      <li><button data-panel="chat"><span class="ic">💬</span> Chat <span class="badge" id="chatBadge" style="display:none">0</span></button></li>
+      <li><button data-panel="apologies"><span class="ic">🙏</span> Apologies</button></li>
+      <li><button data-panel="suggestions"><span class="ic">💡</span> Suggestions</button></li>
+      <li><button data-panel="profile"><span class="ic">⚙️</span> Profile</button></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="mp-main">
+
+    <!-- Topbar -->
+    <div class="mp-topbar">
+      <div class="mp-topbar-left">
+        <button class="mp-menu-toggle" id="mpMenuToggle" aria-label="Toggle menu">☰</button>
+        <h1 id="panelTitle">Overview <em>Dashboard</em></h1>
+      </div>
+      <div class="mp-user">
+        <img id="myAvatar" src="https://ui-avatars.com/api/?name=Member&background=C11B26&color=fff" alt="avatar">
+        <div class="meta">
+          <strong id="myName">Member</strong>
+          <small id="myId">—</small>
+        </div>
+        <button id="logoutButton">SIGN OUT</button>
+      </div>
+    </div>
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <section class="mp-panel active" id="panel-overview">
+
+      <div class="mp-hero">
+        <img id="heroAvatar" src="https://ui-avatars.com/api/?name=Member&background=C11B26&color=fff" alt="avatar">
+        <div class="info">
+          <h2 id="heroName">Welcome back</h2>
+          <div class="id" id="heroId">Member ID: —</div>
+          <p id="heroSub">Your private orchestra workspace.</p>
+          <p style="margin-top:10px"><span class="pill approved" id="heroStatus">APPROVED</span></p>
+        </div>
+      </div>
+
+      <div class="mp-stat-grid">
+        <div class="mp-stat">
+          <span>Attendance</span>
+          <strong id="ovAttendance">—</strong>
+          <small>this season</small>
+        </div>
+        <div class="mp-stat blue">
+          <span>Practices</span>
+          <strong id="ovPractices">—</strong>
+          <small>upcoming</small>
+        </div>
+        <div class="mp-stat warn">
+          <span>Apologies</span>
+          <strong id="ovApologies">—</strong>
+          <small>submitted</small>
+        </div>
+        <div class="mp-stat">
+          <span>Suggestions</span>
+          <strong id="ovSuggestions">—</strong>
+          <small>sent</small>
+        </div>
+      </div>
+
+      <div class="mp-chart-row">
+        <div class="mp-card">
+          <p class="kicker">Attendance Rate</p>
+          <h3>Your Presence</h3>
+          <p class="sub">How often you show up compared to the season total.</p>
+          <div class="mp-gauge-wrap">
+            <div class="mp-gauge">
+              <svg viewBox="0 0 200 120" width="240" height="140">
+                <path d="M 20 110 A 80 80 0 0 1 180 110"
+                      fill="none" stroke="rgba(255,255,255,.08)"
+                      stroke-width="16" stroke-linecap="round"/>
+                <path id="gaugeArc"
+                      d="M 20 110 A 80 80 0 0 1 180 110"
+                      fill="none" stroke="url(#gaugeGrad)"
+                      stroke-width="16" stroke-linecap="round"
+                      stroke-dasharray="0 251"/>
+                <defs>
+                  <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%"   stop-color="#C11B26"/>
+                    <stop offset="50%"  stop-color="#E8434A"/>
+                    <stop offset="100%" stop-color="#7EE29A"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="mp-gauge-value">
+                <strong id="gaugePct">0%</strong>
+                <small>attended</small>
+              </div>
+            </div>
+            <div class="mp-gauge-legend">
+              <div class="row"><span class="dot" style="background:#7EE29A"></span> Present: <strong id="gaugePresent">0</strong></div>
+              <div class="row"><span class="dot" style="background:#FF8B85"></span> Absent: <strong id="gaugeAbsent">0</strong></div>
+              <div class="row"><span class="dot" style="background:#FFB020"></span> Apologies: <strong id="gaugeApologies">0</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mp-card">
+          <p class="kicker">Trend</p>
+          <h3>Attendance Over Time</h3>
+          <p class="sub">Your attendance rate across the last 6 months.</p>
+          <div class="mp-line-wrap">
+            <svg viewBox="0 0 400 180" preserveAspectRatio="none" class="mp-line-svg">
+              <defs>
+                <linearGradient id="lineFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#E8434A" stop-opacity=".4"/>
+                  <stop offset="100%" stop-color="#E8434A" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="40"  x2="400" y2="40"  stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+              <line x1="0" y1="80"  x2="400" y2="80"  stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+              <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+              <line x1="0" y1="160" x2="400" y2="160" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+              <path id="lineArea" d="" fill="url(#lineFill)" stroke="none"/>
+              <path id="linePath" d="" fill="none" stroke="#E8434A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+              <g id="lineDots"></g>
+            </svg>
+            <div class="mp-line-labels">
+              <span>Apr</span><span>May</span><span>Jun</span>
+              <span>Jul</span><span>Aug</span><span>Sep</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mp-chart-row">
+        <div class="mp-card">
+          <p class="kicker">Activity Mix</p>
+          <h3>How You Participate</h3>
+          <p class="sub">Breakdown of your orchestra activity this season.</p>
+          <div class="mp-pie-wrap">
+            <div class="mp-pie" id="activityPie"></div>
+            <div class="mp-legend">
+              <div class="row"><span class="dot" style="background:#E8434A"></span> Attended <span class="val" id="pieAttended">0</span></div>
+              <div class="row"><span class="dot" style="background:#FF8B85"></span> Missed <span class="val" id="pieMissed">0</span></div>
+              <div class="row"><span class="dot" style="background:#FFB020"></span> Apologies <span class="val" id="pieApologies">0</span></div>
+              <div class="row"><span class="dot" style="background:#7AB8FF"></span> Practices <span class="val" id="piePractices">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mp-card">
+          <p class="kicker">Monthly</p>
+          <h3>Sessions Attended</h3>
+          <p class="sub">Number of rehearsals you attended per month.</p>
+          <div class="mp-bar-chart" id="monthlyAttendance"></div>
+        </div>
+      </div>
+
+      <div class="mp-chart-row">
+        <div class="mp-card">
+          <p class="kicker">Overall</p>
+          <h3>Attendance Breakdown</h3>
+          <p class="sub">Present vs missed vs apologies across all sessions.</p>
+          <div class="mp-donut-wrap">
+            <div class="mp-donut">
+              <svg viewBox="0 0 100 100" width="160" height="160">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="14"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="url(#partGrad)" stroke-width="14"
+                        stroke-linecap="round" stroke-dasharray="0 264" id="partArc"/>
+                <defs>
+                  <linearGradient id="partGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%"   stop-color="#E8434A"/>
+                    <stop offset="100%" stop-color="#C11B26"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="center">
+                <strong id="partPct">0%</strong>
+                <small>Attended</small>
+              </div>
+            </div>
+            <div class="mp-legend">
+              <div class="row"><span class="dot" style="background:#E8434A"></span> Present <span class="val" id="partAttended">0</span></div>
+              <div class="row"><span class="dot" style="background:rgba(255,255,255,.15)"></span> Missed <span class="val" id="partMissed">0</span></div>
+              <div class="row"><span class="dot" style="background:#FFB020"></span> Apologies <span class="val" id="partApologies">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mp-card">
+          <p class="kicker">Section</p>
+          <h3>How You Compare</h3>
+          <p class="sub">Your engagement vs your section and the orchestra average.</p>
+          <div class="mp-hbar">
+            <div class="row">
+              <span class="lbl">You</span>
+              <div class="track"><div class="fill" id="barYou" style="width:0%"></div></div>
+              <span class="val" id="barYouVal">0%</span>
+            </div>
+            <div class="row">
+              <span class="lbl">Section avg</span>
+              <div class="track"><div class="fill" style="width:65%"></div></div>
+              <span class="val">65%</span>
+            </div>
+            <div class="row">
+              <span class="lbl">Orchestra avg</span>
+              <div class="track"><div class="fill" style="width:52%"></div></div>
+              <span class="val">52%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">Pattern</p>
+        <h3>Attendance by Weekday</h3>
+        <p class="sub">Which days you tend to attend most.</p>
+        <div class="mp-heatmap" id="heatmap">
+          <div class="hm-day"><span class="hm-label">Mon</span><div class="hm-cells"><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="2"></div></div></div>
+          <div class="hm-day"><span class="hm-label">Tue</span><div class="hm-cells"><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="3"></div></div></div>
+          <div class="hm-day"><span class="hm-label">Wed</span><div class="hm-cells"><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="2"></div></div></div>
+          <div class="hm-day"><span class="hm-label">Thu</span><div class="hm-cells"><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="3"></div><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="3"></div></div></div>
+          <div class="hm-day"><span class="hm-label">Fri</span><div class="hm-cells"><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div></div></div>
+          <div class="hm-day"><span class="hm-label">Sat</span><div class="hm-cells"><div class="hm-cell" data-level="2"></div><div class="hm-cell" data-level="1"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="0"></div></div></div>
+          <div class="hm-day"><span class="hm-label">Sun</span><div class="hm-cells"><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="0"></div><div class="hm-cell" data-level="0"></div></div></div>
+        </div>
+        <div class="hm-legend">
+          <span>Less</span>
+          <span class="hm-cell" data-level="0"></span>
+          <span class="hm-cell" data-level="1"></span>
+          <span class="hm-cell" data-level="2"></span>
+          <span class="hm-cell" data-level="3"></span>
+          <span>More</span>
+        </div>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">Membership Details</p>
+        <h3>Registered Information</h3>
+        <p class="sub">Your registered details on file with the GCO admin team.</p>
+        <div class="mp-grid">
+          <div class="mp-field"><small>Full Name</small><strong id="fldName">—</strong></div>
+          <div class="mp-field"><small>Email</small><strong id="fldEmail">—</strong></div>
+          <div class="mp-field"><small>Instrument</small><strong id="fldInstrument">—</strong></div>
+          <div class="mp-field"><small>Phone</small><strong id="fldPhone">—</strong></div>
+          <div class="mp-field"><small>Nationality</small><strong id="fldNationality">—</strong></div>
+          <div class="mp-field"><small>Date of Birth</small><strong id="fldDob">—</strong></div>
+          <div class="mp-field" style="grid-column:1/-1"><small>Address</small><strong id="fldAddress">—</strong></div>
+          <div class="mp-field"><small>Emergency Contact</small><strong id="fldEmName">—</strong></div>
+          <div class="mp-field"><small>Emergency Phone</small><strong id="fldEmPhone">—</strong></div>
+        </div>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">Consent & Signature</p>
+        <h3>Membership Agreement</h3>
+        <p class="sub">Your accepted consent and signature on file.</p>
+        <div id="signatureDisplay"></div>
+        <p style="margin-top:14px;color:#7EE29A;font-weight:700;font-size:13.5px">
+          ✅ Consent accepted and recorded for membership administration.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ ATTENDANCE ═══ -->
+    <section class="mp-panel" id="panel-attendance">
+      <div class="mp-card">
+        <p class="kicker">My Record</p>
+        <h3>Attendance History</h3>
+        <p class="sub">Your attendance at orchestra rehearsals and events.</p>
+        <div class="mp-stat-grid">
+          <div class="mp-stat"><span>Total Sessions</span><strong id="attTotal">0</strong></div>
+          <div class="mp-stat"><span>Attended</span><strong id="attAttended">0</strong><small style="color:#7EE29A">present</small></div>
+          <div class="mp-stat bad"><span>Missed</span><strong id="attMissed">0</strong><small>absent</small></div>
+          <div class="mp-stat warn"><span>Rate</span><strong id="attRate">0%</strong><small>attendance</small></div>
+        </div>
+        <div id="attendanceList">
+          <div class="mp-empty">Loading attendance records…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRACTICES ═══ -->
+    <section class="mp-panel" id="panel-practices">
+      <div class="mp-card">
+        <p class="kicker">Schedule</p>
+        <h3>Practice Sessions</h3>
+        <p class="sub">All rehearsals and practice sessions scheduled by the GCO team. You can submit an apology for any upcoming session.</p>
+        <div id="practicesList">
+          <div class="mp-empty">Loading practices…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CHAT ═══ -->
+    <section class="mp-panel" id="panel-chat">
+      <div class="mp-card">
+        <p class="kicker">Live Chat</p>
+        <h3>Chat with Admin & Members</h3>
+        <p class="sub">Direct chat with the GCO admin team or other members.</p>
+        <div class="mp-chat-shell" id="chatShell">
+  <aside class="mp-chat-sidebar" id="chatSidebar">
+    <div class="head">
+      <h4>Conversations</h4>
+      <small id="chatOnlineHint">0 online now</small>
+      <input type="search" id="chatSearchInput" placeholder="Search members…">
+    </div>
+    <div class="mp-chat-tabs">
+      <button data-tab="group" class="active">📢 Group</button>
+      <button data-tab="friends">👥 Friends</button>
+      <button data-tab="all">🎻 All</button>
+    </div>
+    <div class="mp-chat-items" id="chatItems"></div>
+  </aside>
+
+  <div class="mp-chat-conv" id="chatConv">
+    <div class="mp-chat-empty">
+      <div class="big">💬</div>
+      <strong>Start chatting</strong>
+      <span>Pick the group chat or a friend on the left.</span>
+    </div>
+  </div>
+</div>
+      </div>
+    </section>
+
+    <!-- ═══ APOLOGIES ═══ -->
+    <section class="mp-panel" id="panel-apologies">
+      <div class="mp-card">
+        <p class="kicker">Cannot Attend</p>
+        <h3>Submit an Apology</h3>
+        <p class="sub">Let the admin team know you can't make a rehearsal or event.</p>
+
+        <form class="mp-form" id="apologyForm">
+          <div>
+            <label for="apPracticeSelect">Practice Session *</label>
+            <select id="apPracticeSelect" required>
+              <option value="">— Choose an upcoming practice —</option>
+            </select>
+          </div>
+          <div>
+            <label for="apReason">Reason *</label>
+            <textarea id="apReason" required placeholder="Please explain why you can't attend (e.g. work commitment, illness, family emergency)…"></textarea>
+          </div>
+          <div class="mp-form-actions">
+            <button type="submit" id="apologySubmitBtn">SUBMIT APOLOGY</button>
+            <button type="button" class="ghost" id="apologyResetBtn">CLEAR</button>
+          </div>
+          <p class="mp-form-note" id="apologyNote"></p>
+        </form>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">My Submissions</p>
+        <h3>Apology History</h3>
+        <p class="sub">All apologies you've submitted and their status.</p>
+        <div id="apologyList">
+          <div class="mp-empty">Loading apologies…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SUGGESTIONS ═══ -->
+    <section class="mp-panel" id="panel-suggestions">
+      <div class="mp-card">
+        <p class="kicker">Your Ideas</p>
+        <h3>Submit a Suggestion</h3>
+        <p class="sub">Share your ideas with the GCO admin team. They can be marked as reviewed, planned, or completed.</p>
+
+        <form class="mp-form" id="suggestionForm">
+          <div class="mp-form-row">
+            <div>
+              <label for="sugCategory">Category</label>
+              <select id="sugCategory">
+                <option>General</option>
+                <option>Rehearsals</option>
+                <option>Performances</option>
+                <option>Repertoire</option>
+                <option>Membership</option>
+                <option>Outreach</option>
+                <option>Website / App</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="sugTitle">Short Title *</label>
+              <input id="sugTitle" required maxlength="120" placeholder="e.g. Add sectional rehearsals">
+            </div>
+          </div>
+
+          <div>
+            <label for="sugBody">Your Suggestion *</label>
+            <textarea id="sugBody" required maxlength="2000" placeholder="Describe your idea — the more detail the better…"></textarea>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;text-transform:none;letter-spacing:0;color:#E5E5EA;cursor:pointer">
+            <input type="checkbox" id="sugAnonymous" style="width:auto">
+            Submit anonymously (admin won't see your name)
+          </label>
+
+          <div class="mp-form-actions">
+            <button type="submit" id="suggestionSubmitBtn">SUBMIT SUGGESTION</button>
+            <button type="button" class="ghost" id="suggestionResetBtn">CLEAR</button>
+          </div>
+          <p class="mp-form-note" id="suggestionNote"></p>
+        </form>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">My Submissions</p>
+        <h3>Suggestion History</h3>
+        <p class="sub">All suggestions you've submitted and any admin responses.</p>
+        <div id="suggestionList">
+          <div class="mp-empty">Loading suggestions…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PROFILE ═══ -->
+    <section class="mp-panel" id="panel-profile">
+
+      <div class="mp-card">
+        <p class="kicker">Identity</p>
+        <h3>Account Information</h3>
+        <p class="sub">These details are locked. Contact an admin if you need to change them.</p>
+        <div class="mp-grid">
+          <div class="mp-field">
+            <small>Email (locked)</small>
+            <strong id="lockEmail">—</strong>
+          </div>
+          <div class="mp-field">
+            <small>Member ID (locked)</small>
+            <strong id="lockId">—</strong>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <small style="display:block;color:#C9C6C0;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">
+            Signature on file (locked)
+          </small>
+          <div id="profileSignatureDisplay"></div>
+        </div>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">Editable</p>
+        <h3>Update Your Profile</h3>
+        <p class="sub">All fields are editable except email and signature.</p>
+
+        <form class="mp-form" id="profileForm" autocomplete="off">
+          <div class="mp-form-row">
+            <div>
+              <label for="pName">Full Name *</label>
+              <input id="pName" required minlength="2" autocomplete="name">
+            </div>
+            <div>
+              <label for="pInstrument">Instrument *</label>
+              <input id="pInstrument" required placeholder="e.g. Violin">
+            </div>
+          </div>
+
+          <div class="mp-form-row">
+            <div>
+              <label for="pPhone">Phone Number</label>
+              <input id="pPhone" type="tel" autocomplete="tel" placeholder="+267 ...">
+            </div>
+            <div>
+              <label for="pNationalId">National ID / Passport</label>
+              <input id="pNationalId" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="mp-form-row">
+            <div>
+              <label for="pDob">Date of Birth</label>
+              <input id="pDob" type="date">
+            </div>
+            <div>
+              <label for="pNationality">Nationality</label>
+              <input id="pNationality" placeholder="e.g. Motswana">
+            </div>
+          </div>
+
+          <div>
+            <label for="pAddress">Residential Address</label>
+            <textarea id="pAddress" rows="2" placeholder="Plot, street, village/town, country"></textarea>
+          </div>
+
+          <div class="mp-form-row">
+            <div>
+              <label for="pEmergencyName">Emergency Contact Name</label>
+              <input id="pEmergencyName">
+            </div>
+            <div>
+              <label for="pEmergencyPhone">Emergency Contact Phone</label>
+              <input id="pEmergencyPhone" type="tel">
+            </div>
+          </div>
+
+          <div class="mp-form-actions">
+            <button type="submit" id="profileSaveBtn">SAVE CHANGES</button>
+            <button type="button" class="ghost" onclick="renderMember()">RESET</button>
+          </div>
+
+          <p class="mp-form-note" id="profileNote"></p>
+        </form>
+      </div>
+
+      <div class="mp-card">
+        <p class="kicker">Security</p>
+        <h3>Change Password</h3>
+        <p class="sub">Use the secure reset link if you want to change your password.</p>
+        <a href="reset-password.html" style="display:inline-block;background:transparent;border:1.5px solid #E8434A;color:#E8434A;padding:11px 20px;border-radius:10px;font-weight:900;font-size:12.5px;letter-spacing:.08em;text-decoration:none;text-transform:uppercase">
+          RESET MY PASSWORD →
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- QR Modal -->
+<div class="mp-modal-mask" id="qrModal">
+  <div class="mp-modal-box">
+    <h3>Your Event Ticket</h3>
+    <p class="sub">Show this QR code at the venue entrance.</p>
+    <div class="qr-code">
+      <canvas id="qrCanvas"></canvas>
+    </div>
+    <strong id="qrTicketId" style="display:block;color:#E8434A;letter-spacing:.08em;font-size:15px"></strong>
+    <small id="qrEventInfo"></small>
+    <div class="mp-modal-actions">
+      <button onclick="window.print()">PRINT</button>
+      <button class="ghost" onclick="closeQrModal()">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<div class="mp-toast" id="mpToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+/* ================================================================
+   MEMBER PORTAL
+================================================================ */
+
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const token = () => sessionStorage.getItem('gcoSession');
+
+const toast = (msg, isErr = false) => {
+  const t = $('#mpToast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'mp-toast show' + (isErr ? ' err' : '');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.className = 'mp-toast', 3200);
+};
+
+const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+const avatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Member')}&background=C11B26&color=fff`;
+
+const API = {
+  async req(path, opts = {}){
+    const res = await fetch(path, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (token() || ''),
+        ...(opts.headers || {})
+      }
+    });
+    if (res.status === 204) return {};
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  },
+  get:  (p)     => API.req(p),
+  post: (p, b)  => API.req(p, {method:'POST', body: JSON.stringify(b || {})}),
+  put:  (p, b)  => API.req(p, {method:'PUT',  body: JSON.stringify(b || {})}),
+  del:  (p)     => API.req(p, {method:'DELETE'})
+};
+
+let me = null;
+let allAnnouncements = [];
+let allEvents = [];
+
+/* ---------- SIDEBAR NAV ---------- */
+$$('#memberNav button').forEach(btn => btn.addEventListener('click', async () => {
+  $$('#memberNav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const p = btn.dataset.panel;
+  $$('.mp-panel').forEach(x => x.classList.remove('active'));
+  const panel = $('#panel-' + p);
+  if (panel) panel.classList.add('active');
+
+  const txt = btn.textContent.replace(/[^\w\s&]/g,'').trim();
+  $('#panelTitle').innerHTML = `${txt} <em>${txt === 'Overview' ? 'Dashboard' : 'Details'}</em>`;
+
+  if (window.innerWidth <= 768) closeSidebar();
+
+  if (p === 'overview')     await loadOverviewStatsReal();
+  if (p === 'attendance')   await loadAttendanceReal();
+  if (p === 'practices')    await loadMemberPractices();
+  if (p === 'apologies')    { await loadMemberPractices(); await loadApologies(); }
+  if (p === 'suggestions')  await loadSuggestions();
+  if (p === 'chat')         await renderChat();
+}));
+
+/* ---------- MOBILE SIDEBAR ---------- */
+const sidebar = $('#mpSidebar');
+const overlay = $('#mpOverlay');
+const menuToggle = $('#mpMenuToggle');
+
+function openSidebar(){
+  sidebar.classList.add('open');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar(){
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
+menuToggle.addEventListener('click', () => {
+  if (sidebar.classList.contains('open')) closeSidebar();
+  else openSidebar();
+});
+overlay.addEventListener('click', closeSidebar);
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) closeSidebar();
+});
+
+/* ============================================================
+   LOGIN
+============================================================ */
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('#loginMessage');
+  const btn = $('#loginSubmit');
+  msg.textContent = '';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: $('#loginEmail').value,
+        password: $('#loginPassword').value
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Sign-in failed');
+
+    if (data.role !== 'member') {
+      throw new Error('❌ You are not a member. This is an Admin account — please use the admin portal.');
+    }
+
+    sessionStorage.setItem('gcoSession', data.token);
+    sessionStorage.setItem('gcoLastRole', data.role);
+    await loadPortal();
+  } catch (err) {
+    msg.textContent = err.message;
+    btn.disabled = false;
+  }
+});
+
+$('#logoutButton').addEventListener('click', async () => {
+  try { await API.post('/api/auth/logout', {}); } catch {}
+  sessionStorage.removeItem('gcoSession');
+  sessionStorage.removeItem('gcoOfflineRole');
+  sessionStorage.removeItem('gcoLastRole');
+  location.reload();
+});
+
+/* ============================================================
+   LOAD PORTAL
+============================================================ */
+async function loadPortal(){
+  if (!token()){
+    if (sessionStorage.getItem('gcoOfflineRole') === 'member'){
+      showDemo();
+      return;
+    }
+    return;
+  }
+  try {
+    const data = await API.get('/api/auth/me');
+    if (data.role !== 'member'){
+      sessionStorage.removeItem('gcoSession');
+      throw new Error('This account is not a member account.');
+    }
+
+    me = data.account;
+    renderMember();
+    $('#loginView').hidden = true;
+    $('#dashboardView').hidden = false;
+
+    await Promise.allSettled([
+      loadAnnouncements(),
+      loadEvents(),
+      loadMyTickets(),
+      loadAttendanceReal(),
+      loadMemberPractices(),
+      loadApologies(),
+      loadSuggestions(),
+      loadOverviewStatsReal()
+    ]);
+
+    // Start chat services
+startChatHeartbeat();
+refreshChatBadge();
+setInterval(refreshChatBadge, 15000);
+
+  } catch (err){
+    sessionStorage.removeItem('gcoSession');
+    $('#loginMessage').textContent = err.message;
+  }
+}
+
+function showDemo(){
+  $('#loginView').hidden = true;
+  $('#dashboardView').hidden = false;
+  me = {
+    id: 'OFFLINE-DEMO', name: 'Demo Member', email: 'member@example.com',
+    instrument: 'Violin', status: 'approved', phone: '+267 71 000 000',
+    nationality: 'Motswana', dateOfBirth: '1995-01-01', address: 'Gaborone',
+    emergencyName: '—', emergencyPhone: '—', signature: 'demo-signature'
+  };
+  renderMember();
+}
+
+/* ============================================================
+   RENDER MEMBER
+============================================================ */
+function renderMember(){
+  const a = me.photoData || me.photo || avatar(me.name);
+  $('#myAvatar').src   = a;
+  $('#heroAvatar').src = a;
+  $('#myName').textContent   = me.name || 'Member';
+  $('#myId').textContent     = me.id || '—';
+  $('#heroName').textContent = `Welcome back, ${(me.name || 'Member').split(' ')[0]}`;
+  $('#heroId').textContent   = `Member ID: ${me.id || '—'}`;
+  $('#heroStatus').textContent = (me.status || 'pending').toUpperCase();
+  $('#heroStatus').className   = 'pill ' + (me.status || 'pending');
+
+  $('#fldName').textContent        = me.name || '—';
+  $('#fldEmail').textContent       = me.email || '—';
+  $('#fldInstrument').textContent  = me.instrument || '—';
+  $('#fldPhone').textContent       = me.phone || '—';
+  $('#fldNationality').textContent = me.nationality || '—';
+  $('#fldDob').textContent         = me.dateOfBirth || '—';
+  $('#fldAddress').textContent     = me.address || '—';
+  $('#fldEmName').textContent      = me.emergencyName || '—';
+  $('#fldEmPhone').textContent     = me.emergencyPhone || '—';
+
+  renderSignature(me.signature);
+
+  const elEmail = document.getElementById('lockEmail');
+  if (elEmail) elEmail.textContent = me.email || '—';
+  const elId = document.getElementById('lockId');
+  if (elId) elId.textContent = me.id || '—';
+
+  const sigDisplay = document.getElementById('profileSignatureDisplay');
+  if (sigDisplay) {
+    const sig = me.signature;
+    if (!sig) {
+      sigDisplay.innerHTML = '<div class="mp-empty">No signature on file.</div>';
+    } else if (typeof sig === 'string' && sig.startsWith('data:image')) {
+      sigDisplay.innerHTML = `<div class="sig-box"><img src="${sig}" alt="Signature"></div>`;
+    } else {
+      sigDisplay.innerHTML = `<div class="sig-box"><span class="sig-text">${sig}</span></div>`;
+    }
+  }
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
+  setVal('pName', me.name);
+  setVal('pInstrument', me.instrument);
+  setVal('pPhone', me.phone);
+  setVal('pNationalId', me.nationalId);
+  setVal('pDob', me.dateOfBirth ? String(me.dateOfBirth).slice(0,10) : '');
+  setVal('pNationality', me.nationality);
+  setVal('pAddress', me.address);
+  setVal('pEmergencyName', me.emergencyName);
+  setVal('pEmergencyPhone', me.emergencyPhone);
+}
+
+function renderSignature(sig){
+  const wrap = $('#signatureDisplay');
+  if (!wrap) return;
+
+  if (!sig){
+    wrap.innerHTML = '<div class="mp-empty">No signature on file.</div>';
+    return;
+  }
+
+  if (typeof sig === 'string' && sig.startsWith('data:image')) {
+    wrap.innerHTML = `<div class="sig-box"><img src="${sig}" alt="Signature on file"></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `<div class="sig-box"><span class="sig-text">${sig}</span></div>`;
+}
+
+/* ============================================================
+   REAL STATS — from server
+============================================================ */
+async function loadOverviewStatsReal(){
+  let total = 0, attended = 0, missed = 0, apologies = 0, rate = 0, upcomingPractices = 0, mySuggestions = 0;
+
+  try {
+    const data = await API.get('/api/member/attendance');
+    total     = data.total || 0;
+    attended  = data.attended || 0;
+    missed    = data.missed || 0;
+    apologies = data.apologies || 0;
+    rate      = data.rate || 0;
+  } catch {}
+
+  try {
+    const { practices } = await API.get('/api/member/practices');
+    upcomingPractices = (practices || []).filter(p => p.isUpcoming).length;
+  } catch {}
+
+  try {
+    const { suggestions } = await API.get('/api/member/suggestions');
+    mySuggestions = (suggestions || []).length;
+  } catch {}
+
+  $('#ovAttendance').textContent  = total ? rate + '%' : '—';
+  $('#ovPractices').textContent   = upcomingPractices;
+  $('#ovApologies').textContent   = apologies;
+  $('#ovSuggestions').textContent = mySuggestions;
+
+  const arc = document.getElementById('gaugeArc');
+  if (arc) arc.setAttribute('stroke-dasharray', `${(rate / 100) * 251} 251`);
+  $('#gaugePct').textContent = rate + '%';
+  $('#gaugePresent').textContent = attended;
+  $('#gaugeAbsent').textContent = missed;
+  $('#gaugeApologies').textContent = apologies;
+
+  const totalMix = attended + missed + apologies + upcomingPractices || 1;
+  const aP  = (attended / totalMix) * 100;
+  const mP  = (missed / totalMix) * 100;
+  const apP = (apologies / totalMix) * 100;
+  const pie = document.getElementById('activityPie');
+  if (pie) {
+    pie.style.background = `conic-gradient(
+      #E8434A 0 ${aP}%,
+      #FF8B85 ${aP}% ${aP + mP}%,
+      #FFB020 ${aP + mP}% ${aP + mP + apP}%,
+      #7AB8FF ${aP + mP + apP}% 100%
+    )`;
+  }
+  $('#pieAttended').textContent = attended;
+  $('#pieMissed').textContent = missed;
+  $('#pieApologies').textContent = apologies;
+  $('#piePractices').textContent = upcomingPractices;
+
+  const arcEl = document.getElementById('partArc');
+  if (arcEl) arcEl.setAttribute('stroke-dasharray', `${(rate / 100) * 264} 264`);
+  $('#partPct').textContent = rate + '%';
+  $('#partAttended').textContent = attended;
+  $('#partMissed').textContent = missed;
+  $('#partApologies').textContent = apologies;
+
+  const barYou = document.getElementById('barYou');
+  if (barYou) {
+    barYou.style.width = rate + '%';
+    $('#barYouVal').textContent = rate + '%';
+  }
+
+  try {
+    const { attendance } = await API.get('/api/member/attendance');
+    const now = new Date();
+    const monthly = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0');
+      const inMonth = (attendance || []).filter(a => (a.date || '').slice(0, 7) === monthKey);
+      const present = inMonth.filter(a => a.status === 'present' || a.status === 'late').length;
+      const pct = inMonth.length ? Math.round((present / inMonth.length) * 100) : 0;
+      monthly.push(pct);
+    }
+    drawLineChart(monthly);
+
+    const monthlyCount = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0');
+      const count = (attendance || []).filter(a =>
+        (a.date || '').slice(0, 7) === monthKey &&
+        (a.status === 'present' || a.status === 'late')
+      ).length;
+      monthlyCount.push(count);
+    }
+    drawMonthlyBars(monthlyCount);
+  } catch {
+    drawLineChart([0,0,0,0,0,0]);
+    drawMonthlyBars([0,0,0,0,0,0]);
+  }
+}
+
+function drawLineChart(values){
+  const path = document.getElementById('linePath');
+  const area = document.getElementById('lineArea');
+  const dots = document.getElementById('lineDots');
+  if (!path || !area || !dots) return;
+
+  const W = 400, H = 180;
+  const pad = 20;
+  const max = 100;
+  const stepX = (W - pad * 2) / (values.length - 1);
+
+  const points = values.map((v, i) => ({
+    x: pad + i * stepX,
+    y: H - pad - ((v / max) * (H - pad * 2))
+  }));
+
+  const lineD = points.map((p, i) => (i === 0 ? 'M' : 'L') + ` ${p.x} ${p.y}`).join(' ');
+  const areaD = lineD + ` L ${points[points.length-1].x} ${H - pad} L ${points[0].x} ${H - pad} Z`;
+
+  path.setAttribute('d', lineD);
+  area.setAttribute('d', areaD);
+  dots.innerHTML = points.map((p, i) => `
+    <circle cx="${p.x}" cy="${p.y}" r="4" fill="#E8434A" stroke="#0A1128" stroke-width="2">
+      <title>${values[i]}%</title>
+    </circle>
+  `).join('');
+}
+
+function drawMonthlyBars(values){
+  const wrap = document.getElementById('monthlyAttendance');
+  if (!wrap) return;
+  const labels = ['Apr','May','Jun','Jul','Aug','Sep'];
+  const max = Math.max(...values, 1);
+  wrap.innerHTML = values.map((v, i) => `
+    <div class="bar" data-label="${labels[i]}" style="height:${Math.max(8, (v / max) * 100)}%">
+      <span>${v}</span>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   ATTENDANCE
+============================================================ */
+async function loadAttendanceReal(){
+  const wrap = $('#attendanceList');
+  if (!wrap) return;
+  try {
+    const data = await API.get('/api/member/attendance');
+    const list = data.attendance || [];
+
+    $('#attTotal').textContent    = data.total || 0;
+    $('#attAttended').textContent = data.attended || 0;
+    $('#attMissed').textContent   = data.missed || 0;
+    $('#attRate').textContent     = (data.rate || 0) + '%';
+
+    if (!list.length){
+      wrap.innerHTML = `
+        <div class="mp-empty">
+          <strong>No attendance yet</strong>
+          Records will appear here once the admin marks a practice session.
+        </div>`;
+      return;
+    }
+
+    wrap.innerHTML = list.map(a => {
+      const map = {
+        present: { emoji: '✅', label: 'Present', color: '#7EE29A' },
+        absent:  { emoji: '❌', label: 'Absent',  color: '#FF8B85' },
+        late:    { emoji: '⏱',  label: 'Late',    color: '#FFC755' },
+        apology: { emoji: '🙏', label: 'Apology', color: '#7AB8FF' },
+        unmarked:{ emoji: '❔', label: 'Not marked', color: '#C9C6C0' }
+      };
+      const s = map[a.status] || map.unmarked;
+      return `
+        <div class="mp-msg ${a.status === 'absent' ? 'unread' : ''}">
+          <div class="top">
+            <strong>${a.practiceTitle || 'Practice'}</strong>
+            <time>${fmtDate(a.date)}</time>
+          </div>
+          <p style="font-weight:800;color:${s.color}">
+            ${s.emoji} ${s.label}
+            ${a.note ? ' — ' + a.note : ''}
+          </p>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="mp-empty">${e.message}</div>`;
+  }
+}
+
+/* ============================================================
+   ANNOUNCEMENTS + EVENTS
+============================================================ */
+async function loadAnnouncements(){
+  try {
+    const { announcements } = await API.get('/api/admin/announcements');
+    allAnnouncements = (announcements || []).filter(a =>
+      a.audience === 'All members' ||
+      a.audience === 'Approved members only' ||
+      a.audience === 'Pending members' ||
+      a.audience === 'Event ticket holders'
+    );
+  } catch {
+    allAnnouncements = [];
+  }
+}
+
+async function loadEvents(){
+  try {
+    const { events } = await API.get('/api/admin/events');
+    allEvents = events || [];
+  } catch {
+    allEvents = [];
+  }
+}
+
+window.generateTicket = async (eventId) => {
+  const ev = allEvents.find(x => x.id === eventId);
+  if (!ev) return;
+  try {
+    const { ticketId, payload } = await API.post(`/api/admin/events/${eventId}/ticket`, {});
+    const mine = JSON.parse(localStorage.getItem('gco_myTickets') || '[]');
+    mine.unshift({ ticketId, eventId, title: ev.title, date: ev.date, venue: ev.venue, at: new Date().toISOString() });
+    localStorage.setItem('gco_myTickets', JSON.stringify(mine.slice(0, 50)));
+
+    $('#qrTicketId').textContent = ticketId;
+    $('#qrEventInfo').textContent = `${ev.title} · ${fmtDate(ev.date)} · ${ev.venue}`;
+    $('#qrModal').classList.add('show');
+    setTimeout(() => {
+      QRCode.toCanvas($('#qrCanvas'), JSON.stringify(payload),
+        { width:180, margin:1, color:{ dark:'#C11B26', light:'#ffffff' } });
+    }, 50);
+
+    loadMyTickets();
+    toast('✓ Ticket generated successfully');
+  } catch (err){
+    toast(err.message, true);
+  }
+};
+
+window.closeQrModal = () => $('#qrModal').classList.remove('show');
+$('#qrModal').addEventListener('click', e => {
+  if (e.target.id === 'qrModal') closeQrModal();
+});
+
+function loadMyTickets(){
+  const list = JSON.parse(localStorage.getItem('gco_myTickets') || '[]');
+  const wrap = $('#myTicketsList');
+  if (!wrap) return;
+  if (!list.length){
+    wrap.innerHTML = '<div class="mp-empty">No tickets generated yet.</div>';
+    return;
+  }
+  wrap.innerHTML = list.map(t => `
+    <div class="mp-msg">
+      <div class="top">
+        <strong>${t.title} — ${t.ticketId}</strong>
+        <time>${fmtDate(t.at)}</time>
+      </div>
+      <p>${fmtDate(t.date)} · ${t.venue}</p>
+    </div>`).join('');
+}
+
+/* ============================================================
+   PROFILE UPDATE
+============================================================ */
+$('#profileForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const note = document.getElementById('profileNote');
+  const btn = document.getElementById('profileSaveBtn');
+  if (note) { note.textContent = ''; note.classList.remove('error'); }
+  if (btn) btn.disabled = true;
+
+  try {
+    const payload = {
+      name:           ($('#pName')?.value || '').trim(),
+      instrument:     ($('#pInstrument')?.value || '').trim(),
+      phone:          ($('#pPhone')?.value || '').trim(),
+      nationalId:     ($('#pNationalId')?.value || '').trim(),
+      dateOfBirth:    $('#pDob')?.value || '',
+      nationality:    ($('#pNationality')?.value || '').trim(),
+      address:        ($('#pAddress')?.value || '').trim(),
+      emergencyName:  ($('#pEmergencyName')?.value || '').trim(),
+      emergencyPhone: ($('#pEmergencyPhone')?.value || '').trim(),
+      signature: me.signature,
+      status:    me.status,
+      email:     me.email
+    };
+
+    if (!payload.name || payload.name.length < 2) {
+      throw new Error('Full name must be at least 2 characters.');
+    }
+    if (!payload.instrument) {
+      throw new Error('Instrument is required.');
+    }
+
+    await API.put(`/api/admin/members/${me.id}`, payload);
+
+    me.name           = payload.name;
+    me.instrument     = payload.instrument;
+    me.phone          = payload.phone;
+    me.nationalId     = payload.nationalId;
+    me.dateOfBirth    = payload.dateOfBirth;
+    me.nationality    = payload.nationality;
+    me.address        = payload.address;
+    me.emergencyName  = payload.emergencyName;
+    me.emergencyPhone = payload.emergencyPhone;
+
+    renderMember();
+
+    if (note) {
+      note.textContent = '✓ Profile updated successfully.';
+      note.classList.remove('error');
+    }
+    toast('✓ Profile updated');
+  } catch (err) {
+    if (note) {
+      note.textContent = '❌ ' + err.message;
+      note.classList.add('error');
+    }
+    toast(err.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   PHASE 2 — PRACTICES + APOLOGIES
+   ══════════════════════════════════════════════════════════════ */
+
+let allPractices = [];
+let myApologies = [];
+
+async function loadMemberPractices(){
+  const wrap = $('#practicesList');
+  if (!wrap) return;
+  try {
+    const data = await API.get('/api/member/practices');
+    allPractices = data.practices || [];
+
+    const upcoming = allPractices.filter(p => p.isUpcoming);
+    populateApologySelect(upcoming);
+
+    if (!allPractices.length){
+      wrap.innerHTML = '<div class="mp-empty">No practice sessions scheduled yet.</div>';
+      return;
+    }
+
+    wrap.innerHTML = allPractices.map(p => {
+      const d = new Date(p.date);
+      const day = isNaN(d.getTime()) ? '—' : String(d.getDate()).padStart(2,'0');
+      const month = isNaN(d.getTime()) ? '' : d.toLocaleString('en-GB', { month: 'short' });
+
+      const statusLabel = {
+        present:  'Present',
+        absent:   'Absent',
+        late:     'Late',
+        apology:  'Apology',
+        unmarked: 'Not marked'
+      }[p.myStatus] || 'Not marked';
+
+      const statusClass = {
+        present:  'present',
+        absent:   'absent',
+        late:     'late',
+        apology:  'apology',
+        unmarked: 'unmarked'
+      }[p.myStatus] || 'unmarked';
+
+      const canApologize = p.isUpcoming && p.myStatus !== 'apology';
+
+      return `
+        <div class="mp-practice">
+          <div class="date-badge">
+            <span class="day">${day}</span>
+            <span class="month">${month}</span>
+          </div>
+          <div class="body">
+            <h4>${p.title}</h4>
+            <div class="meta">
+              ${p.time ? '🕐 ' + p.time + ' · ' : ''}
+              ${p.venue ? '📍 ' + p.venue + ' · ' : ''}
+              ${p.section ? '🎼 ' + p.section : '🎼 All sections'}
+            </div>
+            ${p.notes ? `<div class="meta" style="margin-top:6px;font-style:italic">${p.notes}</div>` : ''}
+            <div class="badges">
+              ${p.section ? `<span class="sec">${p.section}</span>` : ''}
+              <span class="${statusClass}">${statusLabel}</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button ${canApologize ? '' : 'disabled'} onclick="quickApology('${p.id}')">
+              🙏 ${p.myStatus === 'apology' ? 'Apology Sent' : 'Submit Apology'}
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="mp-empty">${e.message}</div>`;
+  }
+}
+
+function populateApologySelect(practices){
+  const sel = $('#apPracticeSelect');
+  if (!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">— Choose an upcoming practice —</option>' +
+    practices.map(p => `<option value="${p.id}">${p.title} · ${fmtDate(p.date)}${p.time ? ' · ' + p.time : ''}</option>`).join('');
+  if (currentVal) sel.value = currentVal;
+}
+
+window.quickApology = id => {
+  $$('#memberNav button').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-panel="apologies"]')?.classList.add('active');
+  $$('.mp-panel').forEach(x => x.classList.remove('active'));
+  $('#panel-apologies')?.classList.add('active');
+  $('#panelTitle').innerHTML = 'Apologies <em>Details</em>';
+
+  setTimeout(() => {
+    const sel = $('#apPracticeSelect');
+    if (sel) sel.value = id;
+    $('#apReason')?.focus();
+  }, 100);
+};
+
+$('#apologyForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const note = $('#apologyNote');
+  const btn = $('#apologySubmitBtn');
+  if (note) { note.textContent = ''; note.classList.remove('error'); }
+  if (btn) btn.disabled = true;
+
+  try {
+    const practiceId = $('#apPracticeSelect').value;
+    const reason = ($('#apReason').value || '').trim();
+
+    if (!practiceId) throw new Error('Please choose a practice session.');
+    if (!reason)     throw new Error('Please provide a reason for your apology.');
+
+    await API.post('/api/member/apologies', { practiceId, reason });
+
+    if (note) note.textContent = '✓ Apology submitted. Waiting for admin review.';
+    $('#apologyForm').reset();
+
+    toast('✓ Apology submitted');
+
+    await Promise.allSettled([
+      loadMemberPractices(),
+      loadApologies(),
+      loadAttendanceReal(),
+      loadOverviewStatsReal()
+    ]);
+  } catch (err) {
+    if (note) { note.textContent = '❌ ' + err.message; note.classList.add('error'); }
+    toast(err.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+});
+
+$('#apologyResetBtn')?.addEventListener('click', () => {
+  $('#apologyForm').reset();
+  $('#apologyNote').textContent = '';
+});
+
+async function loadApologies(){
+  const wrap = $('#apologyList');
+  if (!wrap) return;
+  try {
+    const data = await API.get('/api/member/apologies');
+    myApologies = data.apologies || [];
+
+    if (!myApologies.length){
+      wrap.innerHTML = '<div class="mp-empty">You haven\'t submitted any apologies yet.</div>';
+      return;
+    }
+
+    wrap.innerHTML = myApologies.map(a => `
+      <div class="mp-apology-item ${a.status}">
+        <div class="head">
+          <strong>${a.practiceTitle}</strong>
+          <time>${fmtDate(a.submittedAt)}</time>
+        </div>
+        <p style="color:#C9C6C0;font-size:12.5px;margin:0">
+          Practice date: ${fmtDate(a.practiceDate)}
+        </p>
+        <p>${a.reason}</p>
+        <span class="status ${a.status}">${a.status}</span>
+      </div>
+    `).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="mp-empty">${e.message}</div>`;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PHASE 3 — SUGGESTIONS (member side)
+   ══════════════════════════════════════════════════════════════ */
+
+let mySuggestions = [];
+
+async function loadSuggestions(){
+  const wrap = $('#suggestionList');
+  if (!wrap) return;
+  try {
+    const data = await API.get('/api/member/suggestions');
+    mySuggestions = data.suggestions || [];
+
+    if (!mySuggestions.length){
+      wrap.innerHTML = '<div class="mp-empty">You haven\'t submitted any suggestions yet.</div>';
+      return;
+    }
+
+    const statusMap = {
+      new:      { label: 'New',      color: '#C9C6C0' },
+      reviewed: { label: 'Reviewed', color: '#7AB8FF' },
+      planned:  { label: 'Planned',  color: '#FFC755' },
+      done:     { label: 'Done',     color: '#7EE29A' },
+      declined: { label: 'Declined', color: '#FF8B85' }
+    };
+
+    wrap.innerHTML = mySuggestions.map(s => {
+      const st = statusMap[s.status] || statusMap.new;
+      return `
+        <div class="mp-sug-item ${s.status}">
+          <div class="head">
+            <div>
+              <span class="mp-sug-cat">${s.category || 'General'}</span>
+              <strong>${s.title}</strong>
+            </div>
+            <time>${fmtDate(s.submittedAt)}</time>
+          </div>
+          <p>${s.body}</p>
+          <div class="meta-row">
+            <span class="status" style="background:${st.color}22;color:${st.color}">${st.label}</span>
+            ${s.anonymous ? '<span class="status" style="background:rgba(255,255,255,.08);color:#C9C6C0">Anonymous</span>' : ''}
+          </div>
+          ${s.adminResponse ? `
+            <div class="mp-sug-response">
+              <small>Admin response${s.respondedBy ? ' · ' + s.respondedBy : ''}</small>
+              <p>${s.adminResponse}</p>
+            </div>` : ''}
+        </div>
+      `;
+    }).join('');
+  } catch (e) {
+    wrap.innerHTML = `<div class="mp-empty">${e.message}</div>`;
+  }
+}
+
+$('#suggestionForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const note = $('#suggestionNote');
+  const btn = $('#suggestionSubmitBtn');
+  if (note) { note.textContent = ''; note.classList.remove('error'); }
+  if (btn) btn.disabled = true;
+
+  try {
+    const title = ($('#sugTitle').value || '').trim();
+    const body  = ($('#sugBody').value || '').trim();
+    const category = $('#sugCategory').value;
+    const anonymous = $('#sugAnonymous').checked;
+
+    if (!title) throw new Error('Please add a short title.');
+    if (!body)  throw new Error('Please describe your suggestion.');
+
+    await API.post('/api/member/suggestions', { title, body, category, anonymous });
+
+    if (note) note.textContent = '✓ Suggestion submitted. Thanks for helping improve GCO!';
+    $('#suggestionForm').reset();
+
+    toast('✓ Suggestion submitted');
+    await Promise.allSettled([
+      loadSuggestions(),
+      loadOverviewStatsReal()
+    ]);
+  } catch (err) {
+    if (note) { note.textContent = '❌ ' + err.message; note.classList.add('error'); }
+    toast(err.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+});
+
+$('#suggestionResetBtn')?.addEventListener('click', () => {
+  $('#suggestionForm').reset();
+  $('#suggestionNote').textContent = '';
+});
+
+/* ============================================================
+   BOOT
+============================================================ */
+/* ══════════════════════════════════════════════════════════════
+   PHASE 4 — CHAT (member side)
+   ══════════════════════════════════════════════════════════════ */
+
+const chatState = {
+  tab: 'friends',
+  search: '',
+  cache: { friends: [], all: [], online: [] },
+  activeConv: null,       // 'group' | memberId | 'GCO-ADMIN'
+  activeMeta: null,
+  polling: null,
+  heartbeat: null
+};
+
+const chatTime = iso => iso ? new Date(iso).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) : '';
+const chatDay  = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'short' }) : '';
+
+/* ── Heartbeat ── */
+function startChatHeartbeat(){
+  if (chatState.heartbeat) return;
+  const beat = async () => { try { await API.post('/api/chat/heartbeat', {}); } catch {} };
+  beat();
+  chatState.heartbeat = setInterval(beat, 20000);
+}
+
+/* ── Unread badge in sidebar ── */
+async function refreshChatBadge(){
+  try {
+    const data = await API.get('/api/chat/unread');
+    const badge = document.getElementById('chatBadge');
+    if (!badge) return;
+    const total = (data.directTotal || 0) + (data.mentions || 0);
+    if (total > 0) {
+      badge.textContent = total > 99 ? '99+' : total;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch {}
+}
+
+/* ── Main render ── */
+async function renderChat(){
+  startChatHeartbeat();
+  await refreshChatBadge();
+
+  try {
+    // Friends
+    const friendsRes = await API.get('/api/friends').catch(() => ({ friends: [] }));
+    chatState.cache.friends = friendsRes.friends || [];
+
+    // Online list
+    const onlineRes = await API.get('/api/chat/online').catch(() => ({ online: [] }));
+    chatState.cache.online = onlineRes.online || [];
+
+    // All members (from admin list — everyone can see)
+    // We piggyback on the group list + friends, but for "all" we fetch admin list of members
+    // Since members can't call /api/admin/members, we synthesize "all" from friends + online + group chat participants.
+    // Better: use friends list plus anyone we've chatted with. For simplicity, we show friends + GCO Admin.
+    chatState.cache.all = buildAllList();
+
+    const onlineCount = chatState.cache.online.length;
+    const hint = document.getElementById('chatOnlineHint');
+    if (hint) hint.textContent = `${onlineCount} online now`;
+
+    renderChatItems();
+  } catch (e) {
+    const items = document.getElementById('chatItems');
+    if (items) items.innerHTML = `<div class="mp-empty" style="font-size:12px">${e.message}</div>`;
+  }
+}
+
+/* Build "all" list — GCO Admin + friends + anyone in group chat we've seen */
+function buildAllList(){
+  const seen = new Map();
+  // Always include GCO Admin
+  seen.set('GCO-ADMIN', {
+    id: 'GCO-ADMIN',
+    name: 'GCO Admin',
+    email: '',
+    role: 'admin',
+    online: chatState.cache.online.some(o => o.id === 'GCO-ADMIN') || chatState.cache.online.some(o => o.role === 'admin')
+  });
+  // Friends
+  chatState.cache.friends.forEach(f => seen.set(f.id, f));
+  // Online members
+  chatState.cache.online.forEach(o => {
+    if (o.id !== me.id) {
+      const existing = seen.get(o.id);
+      seen.set(o.id, {
+        id: o.id,
+        name: o.name,
+        email: o.email,
+        role: o.role,
+        online: true,
+        instrument: existing?.instrument || ''
+      });
+    }
+  });
+  return [...seen.values()];
+}
+
+/* ── Render list ── */
+function renderChatItems(){
+  const wrap = document.getElementById('chatItems');
+  if (!wrap) return;
+
+  const q = chatState.search.trim().toLowerCase();
+
+  if (chatState.tab === 'group'){
+    wrap.innerHTML = `
+      <div class="mp-chat-item ${chatState.activeConv === 'group' ? 'active' : ''}"
+           onclick="openChatConv('group')">
+        <div class="mp-chat-group-icon">📢</div>
+        <div class="body">
+          <strong>Group Chat</strong>
+          <small>Everyone in the orchestra</small>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const source = chatState.tab === 'friends' ? chatState.cache.friends : chatState.cache.all;
+  const filtered = q
+    ? source.filter(x => (x.name || '').toLowerCase().includes(q))
+    : source;
+
+  if (!filtered.length){
+    wrap.innerHTML = `<div class="mp-empty" style="padding:16px 8px;font-size:12px">
+      ${chatState.tab === 'friends' ? 'No friends yet. Add some from the "All" tab.' : 'No members found.'}
+    </div>`;
+    return;
+  }
+
+  wrap.innerHTML = filtered.map(x => `
+    <div class="mp-chat-item ${chatState.activeConv === x.id ? 'active' : ''}"
+         onclick="openChatConv('${x.id}')">
+      <div class="avatar-wrap">
+        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(x.name)}&background=${x.role === 'admin' ? '0b4b8a' : 'C11B26'}&color=fff" alt="">
+        <span class="online-dot ${x.online ? 'on' : ''}"></span>
+      </div>
+      <div class="body">
+        <strong>${x.name}${x.role === 'admin' ? ' 🛡️' : ''}</strong>
+        <small>${x.instrument || (x.role === 'admin' ? 'Administrator' : 'Member')}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Tab + search listeners ── */
+document.querySelectorAll('.mp-chat-tabs button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.mp-chat-tabs button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    chatState.tab = b.dataset.tab;
+    renderChatItems();
+  });
+});
+document.addEventListener('input', e => {
+  if (e.target && e.target.id === 'chatSearchInput'){
+    chatState.search = e.target.value;
+    renderChatItems();
+  }
+});
+
+/* ── Open a conversation ── */
+window.openChatConv = async id => {
+  chatState.activeConv = id;
+  renderChatItems();
+
+  const convWrap = document.getElementById('chatConv');
+  if (!convWrap) return;
+
+  const shell = document.getElementById('chatShell');
+  if (shell && window.innerWidth <= 768) shell.classList.remove('show-list');
+
+  if (id === 'group'){
+    chatState.activeMeta = { id: 'group', name: 'Group Chat', isGroup: true };
+    convWrap.innerHTML = chatConvShell({
+      name: 'Group Chat',
+      subtitle: 'Everyone in the orchestra',
+      icon: '📢',
+      isGroup: true
+    });
+  } else {
+    const meta = chatState.cache.all.find(x => x.id === id)
+              || chatState.cache.friends.find(x => x.id === id);
+    if (!meta) return;
+    chatState.activeMeta = meta;
+    convWrap.innerHTML = chatConvShell({
+      name: meta.name,
+      subtitle: meta.online ? '● Online now' : (meta.role === 'admin' ? 'Administrator' : (meta.instrument || 'Member')),
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(meta.name)}&background=${meta.role === 'admin' ? '0b4b8a' : 'C11B26'}&color=fff`,
+      online: meta.online,
+      showBack: true
+    });
+  }
+
+  await loadChatMessages(id);
+  startPolling();
+}
+
+function chatConvShell({ name, subtitle, avatar, icon, online, isGroup, showBack }){
+  return `
+    <div class="mp-chat-conv-head">
+      ${showBack ? `<button class="mp-chat-mobile-back" onclick="showChatList()">←</button>` : ''}
+      ${icon
+        ? `<div class="mp-chat-group-icon">${icon}</div>`
+        : `<img src="${avatar}" alt="">`}
+      <div class="meta">
+        <strong>${name}</strong>
+        <small class="${online ? 'online' : ''}">${subtitle}</small>
+      </div>
+    </div>
+    <div class="mp-chat-body" id="chatBody">
+      <div class="mp-chat-empty"><div class="big">⏳</div>Loading…</div>
+    </div>
+    <form class="mp-chat-compose" id="chatComposeForm" style="position:relative">
+      ${isGroup ? `<div class="mp-chat-mention-hint" id="mentionHint"></div>` : ''}
+      <div class="row">
+        <textarea id="chatInput" placeholder="${isGroup ? 'Message the group… (use @ to mention)' : 'Type a message…'}" rows="1"></textarea>
+        <button class="send-btn" type="submit" title="Send">➤</button>
+      </div>
+    </form>
+  `;
+}
+
+window.showChatList = () => {
+  const shell = document.getElementById('chatShell');
+  if (shell) shell.classList.add('show-list');
+};
+
+/* ── Load messages ── */
+async function loadChatMessages(convId){
+  const body = document.getElementById('chatBody');
+  if (!body) return;
+  try {
+    let messages = [];
+    if (convId === 'group'){
+      const res = await API.get('/api/chat/group?limit=200');
+      messages = res.messages || [];
+    } else {
+      const res = await API.get(`/api/chat/direct/${convId}?limit=200`);
+      messages = res.messages || [];
+      try { await API.post(`/api/chat/read/${convId}`, {}); } catch {}
+    }
+
+    if (!messages.length){
+      body.innerHTML = `<div class="mp-chat-empty"><div class="big">💬</div>No messages yet. Say hi!</div>`;
+    } else {
+      body.innerHTML = messages.map(m => {
+        const mine = m.from === me.id;
+        const mentionsMe = Array.isArray(m.mentions) && m.mentions.includes(me.id);
+        const adminBubble = m.adminReply || m.from === 'GCO-ADMIN';
+        let cls = 'theirs';
+        if (mine) cls = 'mine';
+        let bubbleCls = '';
+        if (adminBubble && !mine) bubbleCls = 'admin-bubble';
+        if (mentionsMe && !mine) bubbleCls = 'mention';
+        return `
+          <div class="mp-chat-msg ${cls}">
+            ${!mine ? `<span class="sender ${adminBubble ? 'admin-tag' : ''}">${m.fromName || 'Someone'}${m.fromRole === 'admin' ? ' 🛡️' : ''}</span>` : ''}
+            <div class="bubble ${bubbleCls}">${escapeHTML(m.text)}</div>
+            <span class="meta">${chatDay(m.at)} · ${chatTime(m.at)}${mentionsMe ? ' · 📌 mentioned you' : ''}</span>
+          </div>`;
+      }).join('');
+    }
+    body.scrollTop = body.scrollHeight;
+  } catch (e) {
+    body.innerHTML = `<div class="mp-chat-empty">${e.message}</div>`;
+  }
+
+  bindChatCompose();
+}
+
+/* ── Bind compose form ── */
+function bindChatCompose(){
+  const form = document.getElementById('chatComposeForm');
+  if (!form || form.dataset.bound) return;
+  form.dataset.bound = '1';
+
+  const input = document.getElementById('chatInput');
+  const hint = document.getElementById('mentionHint');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    sendChatMessage();
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendChatMessage();
+    }
+    if (e.key === 'Escape' && hint) hint.classList.remove('show');
+  });
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(110, input.scrollHeight) + 'px';
+
+    // @mention support (group chat only)
+    if (hint && chatState.activeConv === 'group'){
+      const val = input.value;
+      const match = val.match(/@(\w*)$/);
+      if (match){
+        const q = match[1].toLowerCase();
+        const candidates = chatState.cache.all
+          .filter(x => x.id !== me.id && (x.name || '').toLowerCase().includes(q))
+          .slice(0, 6);
+        if (candidates.length){
+          hint.innerHTML = candidates.map(c => `
+            <div class="mention-item" onclick="insertMention('${c.name.replace(/'/g, "\\'")}')">
+              <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=C11B26&color=fff">
+              ${c.name}
+            </div>
+          `).join('');
+          hint.classList.add('show');
+          return;
+        }
+      }
+      hint.classList.remove('show');
+    }
+  });
+}
+
+window.insertMention = (name) => {
+  const input = document.getElementById('chatInput');
+  const hint = document.getElementById('mentionHint');
+  if (!input) return;
+  const val = input.value;
+  const newVal = val.replace(/@(\w*)$/, '@' + name + ' ');
+  input.value = newVal;
+  input.focus();
+  if (hint) hint.classList.remove('show');
+};
+
+/* ── Send message ── */
+async function sendChatMessage(){
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  const convId = chatState.activeConv;
+  if (!convId) return;
+
+  input.disabled = true;
+  try {
+    if (convId === 'group'){
+      await API.post('/api/chat/group', { text });
+    } else {
+      await API.post(`/api/chat/direct/${convId}`, { text });
+    }
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('mentionHint')?.classList.remove('show');
+    await loadChatMessages(convId);
+    await renderChat();
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+/* ── Escape ── */
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[c]));
+}
+
+/* ── Polling for the active conversation ── */
+function startPolling(){
+  if (chatState.polling) clearInterval(chatState.polling);
+  chatState.polling = setInterval(async () => {
+    const panel = document.getElementById('panel-chat');
+    if (panel && panel.classList.contains('active') && chatState.activeConv){
+      await loadChatMessages(chatState.activeConv);
+      await refreshChatBadge();
+    }
+  }, 5000);
+}
+loadPortal();
+</script>
+
+<!-- Start of Tawk.to Script -->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;s1.src='https://embed.tawk.to/6ab56c6b2c323b344704c61a/1k3aav15v';
+s1.charset='UTF-8';s1.setAttribute('crossorigin','*');s0.parentNode.insertBefore(s1,s0);
+})();
+Tawk_API.onLoad = function(){ Tawk_API.showWidget(); window.setInterval(function(){ Tawk_API.showWidget(); },2000); };
+Tawk_API.onChatHidden = function(){ Tawk_API.showWidget(); };
+</script>
+<!-- End of Tawk.to Script -->
+</body>
+</html>

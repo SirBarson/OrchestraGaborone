@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register | Gaborone Community Orchestra</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* ============================================================
+     REGISTER PAGE — scoped enhancements
+     ============================================================ */
+  .reg-step{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:.72rem;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;color:#E8434A;margin-bottom:14px;
+  }
+  .reg-step .dot{
+    width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg,#C11B26,#E8434A);
+    display:inline-flex;align-items:center;justify-content:center;
+    color:#fff;font-size:.72rem;font-weight:900;
+  }
+  .reg-step .dot.pending{background:rgba(255,255,255,.15);color:#D3D0CB}
+
+  /* OTP row */
+  .otp-row{display:flex;gap:10px;align-items:flex-end}
+  .otp-row input{flex:1}
+  .otp-row button{
+    background:transparent;border:1px solid #E8434A;color:#E8434A;
+    padding:12px 16px;border-radius:9px;font-weight:800;font-size:.72rem;
+    letter-spacing:.05em;cursor:pointer;text-transform:uppercase;
+    white-space:nowrap;font-family:inherit;transition:.18s;
+  }
+  .otp-row button:hover:not(:disabled){background:#E8434A;color:#fff}
+  .otp-row button:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Password hint */
+  .pw-hint{
+    font-size:.72rem;color:#D3D0CB;margin-top:6px;line-height:1.5;
+  }
+  .pw-hint span{display:inline-block;margin-right:12px}
+  .pw-hint span.ok{color:#7EE29A}
+  .pw-hint span.bad{color:#FF8B85}
+
+  /* Previews */
+  .preview-wrap{
+    margin-top:10px;padding:10px;
+    background:rgba(0,0,0,.3);border-radius:9px;
+    border:1px dashed rgba(255,255,255,.15);
+    display:none;align-items:center;gap:12px;
+  }
+  .preview-wrap.show{display:flex}
+  .preview-wrap img{
+    width:60px;height:60px;border-radius:8px;object-fit:cover;
+    border:2px solid #E8434A;background:#fff;
+  }
+  .preview-wrap .info{flex:1}
+  .preview-wrap .info strong{font-size:.82rem;display:block}
+  .preview-wrap .info small{font-size:.72rem;color:#D3D0CB}
+  .preview-wrap button{
+    background:none;border:1px solid rgba(255,255,255,.2);
+    color:#D3D0CB;border-radius:8px;padding:6px 10px;
+    font-size:.68rem;font-weight:800;cursor:pointer;letter-spacing:.05em;
+    text-transform:uppercase;font-family:inherit;
+  }
+  .preview-wrap button:hover{border-color:#E8434A;color:#E8434A}
+
+  /* Success card */
+  .success-card{
+    background:linear-gradient(140deg,rgba(126,226,154,.15),rgba(255,255,255,.03));
+    border:1px solid rgba(126,226,154,.35);border-radius:16px;
+    padding:32px;text-align:center;margin-top:8px;
+  }
+  .success-card .check{
+    width:64px;height:64px;border-radius:50%;margin:0 auto 16px;
+    background:linear-gradient(135deg,#4CAF50,#7EE29A);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2rem;color:#fff;box-shadow:0 8px 30px rgba(126,226,154,.4);
+  }
+  .success-card h3{margin:0 0 8px;color:#fff;font-size:1.25rem}
+  .success-card p{color:#D3D0CB;font-size:.9rem;line-height:1.6;margin:0 0 10px}
+  .success-card .member-id{
+    display:inline-block;background:rgba(232,67,74,.15);
+    color:#E8434A;font-family:monospace;font-size:1rem;font-weight:900;
+    letter-spacing:.08em;padding:10px 18px;border-radius:9px;
+    margin:12px 0 16px;border:1px dashed rgba(232,67,74,.4);
+  }
+  .success-card .actions{
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+    margin-top:20px;
+  }
+  .success-card a{
+    background:linear-gradient(135deg,#C11B26,#E8434A);color:#fff;
+    padding:11px 20px;border-radius:9px;text-decoration:none;
+    font-weight:800;font-size:.78rem;letter-spacing:.05em;
+    text-transform:uppercase;transition:.18s;
+  }
+  .success-card a.ghost{
+    background:transparent;border:1px solid rgba(255,255,255,.2);color:#D3D0CB;
+  }
+  .success-card a:hover{filter:brightness(1.1)}
+
+  /* Step badge */
+  .reg-progress{
+    display:flex;justify-content:center;gap:0;margin-bottom:20px;
+    font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  }
+  .reg-progress .step{
+    padding:6px 14px;background:rgba(255,255,255,.05);
+    color:#D3D0CB;position:relative;
+  }
+  .reg-progress .step.active{background:#E8434A;color:#fff}
+  .reg-progress .step:first-child{border-radius:999px 0 0 999px}
+  .reg-progress .step:last-child{border-radius:0 999px 999px 0}
+
+  /* Small tweak */
+  .portal-auth-card textarea{
+    background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);
+    color:#fff;padding:11px 13px;border-radius:9px;font-size:.9rem;
+    font-family:inherit;width:100%;resize:vertical;
+  }
+  .portal-auth-card textarea:focus{
+    outline:none;border-color:#E8434A;box-shadow:0 0 0 3px rgba(232,67,74,.25);
+  }
+</style>
+</head>
+<body class="portal-page">
+<main class="portal-page-shell">
+  <a class="portal-back" href="index.html">← Back to GCO website</a>
+
+  <!-- ═════════ FORM VIEW ═════════ -->
+  <section class="portal-auth-card" id="formView">
+    <p class="section-label">New musician</p>
+    <h1 class="section-title">Register <em>Membership</em></h1>
+    <p class="section-body" style="margin-bottom:22px">
+      Join the Gaborone Community Orchestra. Complete the form below,
+      verify your email, and our admin team will review your application.
+    </p>
+
+    <!-- Progress indicator -->
+    <div class="reg-progress" id="regProgress">
+      <div class="step active" data-step="1">1 · Details</div>
+      <div class="step" data-step="2">2 · Verify Email</div>
+      <div class="step" data-step="3">3 · Done</div>
+    </div>
+
+    <form id="registerForm" class="portal-form" novalidate>
+
+      <!-- Name + instrument -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Full name</label>
+          <input id="name" required minlength="2" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="instrument">Instrument</label>
+          <input id="instrument" required placeholder="e.g. Violin">
+        </div>
+      </div>
+
+      <!-- Phone + ID -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input id="phone" type="tel" required placeholder="+267 ..." autocomplete="tel">
+        </div>
+        <div class="form-group">
+          <label for="nationalId">National ID or passport number</label>
+          <input id="nationalId" required autocomplete="off">
+        </div>
+      </div>
+
+      <!-- DOB + nationality -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dateOfBirth">Date of birth</label>
+          <input id="dateOfBirth" type="date" required autocomplete="bday">
+        </div>
+        <div class="form-group">
+          <label for="nationality">Nationality</label>
+          <input id="nationality" required value="Motswana">
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="form-group">
+        <label for="address">Residential address</label>
+        <textarea id="address" required rows="2" placeholder="Plot, street, village/town, country" autocomplete="street-address"></textarea>
+      </div>
+
+      <!-- Emergency -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="emergencyName">Emergency contact name</label>
+          <input id="emergencyName" required>
+        </div>
+        <div class="form-group">
+          <label for="emergencyPhone">Emergency contact phone</label>
+          <input id="emergencyPhone" type="tel" required>
+        </div>
+      </div>
+
+      <!-- Email + OTP -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+
+      <div class="form-group" id="otpGroup" hidden>
+        <label for="otp">Email OTP (6-digit code)</label>
+        <div class="otp-row">
+          <input id="otp" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="123456" autocomplete="one-time-code">
+          <button type="button" id="resendOtpBtn">RESEND</button>
+        </div>
+        <small class="pw-hint" id="otpHint">Check your email inbox (and spam folder) for the code.</small>
+      </div>
+
+      <!-- Password -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" minlength="8" required autocomplete="new-password">
+          <small class="pw-hint" id="pwHint">
+            <span id="pwLen" class="bad">8+ characters</span>
+            <span id="pwLetter" class="bad">1 letter</span>
+            <span id="pwNum" class="bad">1 number</span>
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="signatureUpload">Signature image (optional)</label>
+          <input id="signatureUpload" type="file" accept="image/jpeg,image/png,image/webp">
+        </div>
+      </div>
+
+      <!-- Signature pad -->
+      <div class="form-group">
+        <label>Draw your signature</label>
+        <canvas id="signaturePad" class="signature-pad" width="600" height="180" aria-label="Draw your signature"></canvas>
+        <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn-outline" id="clearSignature" type="button">CLEAR SIGNATURE</button>
+          <small class="pw-hint" style="margin:0">Draw with mouse, finger, or stylus — or upload an image above.</small>
+        </div>
+        <div class="preview-wrap" id="sigPreview">
+          <img id="sigPreviewImg" alt="Signature preview">
+          <div class="info"><strong>Signature preview</strong><small>Uploaded signature image</small></div>
+          <button type="button" id="clearSigUpload">REMOVE</button>
+        </div>
+      </div>
+
+      <!-- Photo -->
+      <div class="form-group">
+        <label for="photo">Profile picture</label>
+        <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="user" required>
+        <small class="pw-hint">Take a picture with your camera or upload a clear image under 2 MB.</small>
+        <div class="preview-wrap" id="photoPreview">
+          <img id="photoPreviewImg" alt="Profile preview">
+          <div class="info"><strong id="photoName">photo.jpg</strong><small id="photoSize">— KB</small></div>
+          <button type="button" id="clearPhoto">REMOVE</button>
+        </div>
+      </div>
+
+      <!-- Consent -->
+      <label class="consent-check" style="display:flex;gap:10px;align-items:flex-start;margin:16px 0">
+        <input id="consent" type="checkbox" required style="margin-top:3px">
+        <span style="font-size:.85rem;color:#D3D0CB">
+          I consent to GCO storing my member information and contacting me about orchestra activities.
+        </span>
+      </label>
+
+      <button class="btn-primary" id="submitButton" type="submit" style="width:100%">
+        SEND OTP & CONTINUE
+      </button>
+      <p class="portal-message" id="message" style="min-height:22px;text-align:center;margin-top:14px"></p>
+    </form>
+  </section>
+
+  <!-- ═════════ SUCCESS VIEW ═════════ -->
+  <section class="portal-auth-card" id="successView" hidden>
+    <div class="success-card">
+      <div class="check">✓</div>
+      <h3>Application Received!</h3>
+      <p>Thank you for applying to join the Gaborone Community Orchestra.</p>
+      <p>Your member ID is:</p>
+      <div class="member-id" id="memberIdDisplay">—</div>
+      <p><strong>Next steps:</strong></p>
+      <p style="text-align:left;display:inline-block">
+        1. Our admin team will review your application.<br>
+        2. You'll receive an email once approved.<br>
+        3. Then you can sign in to the <a href="member-portal.html" style="color:#E8434A">Member Portal</a>.
+      </p>
+      <div class="actions">
+        <a href="portal.html">GO TO PORTAL</a>
+        <a href="index.html" class="ghost">BACK TO WEBSITE</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ================================================================
+   REGISTER PAGE — full workflow
+   Step 1: fill form → send OTP
+   Step 2: verify OTP → submit registration
+   Step 3: success screen
+================================================================ */
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+let verificationToken = '';
+let otpRequested = false;
+let resendCooldown = 0;
+let resendTimer = null;
+
+/* ---------- API helper ---------- */
+async function json(url, options) {
+  const res = await fetch(url, options);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+/* ---------- File → DataURL ---------- */
+function readFile(file, maxMessage) {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve('');
+    if (file.size > 2 * 1024 * 1024) return reject(new Error(maxMessage));
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Could not read the selected file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+/* ---------- Signature ---------- */
+const signaturePad = $('#signaturePad');
+const signatureContext = signaturePad.getContext('2d');
+let drawing = false;
+let hasSignatureDrawing = false;
+
+signatureContext.strokeStyle = '#111';
+signatureContext.lineWidth = 3;
+signatureContext.lineCap = 'round';
+signatureContext.lineJoin = 'round';
+
+function signaturePoint(event) {
+  const rect = signaturePad.getBoundingClientRect();
+  const src = event.touches ? event.touches[0] : event;
+  return {
+    x: (src.clientX - rect.left) * signaturePad.width  / rect.width,
+    y: (src.clientY - rect.top)  * signaturePad.height / rect.height
+  };
+}
+function startSignature(event) {
+  drawing = true;
+  hasSignatureDrawing = true;
+  signatureContext.beginPath();
+  const p = signaturePoint(event);
+  signatureContext.moveTo(p.x, p.y);
+  event.preventDefault();
+}
+function drawSignature(event) {
+  if (!drawing) return;
+  const p = signaturePoint(event);
+  signatureContext.lineTo(p.x, p.y);
+  signatureContext.stroke();
+  event.preventDefault();
+}
+signaturePad.addEventListener('pointerdown', startSignature);
+signaturePad.addEventListener('pointermove', drawSignature);
+signaturePad.addEventListener('pointerup', () => drawing = false);
+signaturePad.addEventListener('pointerleave', () => drawing = false);
+signaturePad.addEventListener('pointercancel', () => drawing = false);
+
+$('#clearSignature').addEventListener('click', () => {
+  signatureContext.clearRect(0, 0, signaturePad.width, signaturePad.height);
+  hasSignatureDrawing = false;
+});
+
+/* ---------- Password strength ---------- */
+$('#password').addEventListener('input', e => {
+  const v = e.target.value;
+  $('#pwLen').className    = v.length >= 8 ? 'ok' : 'bad';
+  $('#pwLetter').className = /[A-Za-z]/.test(v) ? 'ok' : 'bad';
+  $('#pwNum').className    = /\d/.test(v) ? 'ok' : 'bad';
+});
+
+/* ---------- Signature upload preview ---------- */
+$('#signatureUpload').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) {
+    $('#sigPreview').classList.remove('show');
+    return;
+  }
+  try {
+    const dataUrl = await readFile(file, 'Signature image must be under 2 MB.');
+    $('#sigPreviewImg').src = dataUrl;
+    $('#sigPreview').classList.add('show');
+  } catch (err) {
+    alert(err.message);
+    e.target.value = '';
+    $('#sigPreview').classList.remove('show');
+  }
+});
+$('#clearSigUpload').addEventListener('click', () => {
+  $('#signatureUpload').value = '';
+  $('#sigPreview').classList.remove('show');
+});
+
+/* ---------- Photo upload preview ---------- */
+$('#photo').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) {
+    $('#photoPreview').classList.remove('show');
+    return;
+  }
+  try {
+    const dataUrl = await readFile(file, 'Profile picture must be under 2 MB.');
+    $('#photoPreviewImg').src = dataUrl;
+    $('#photoName').textContent = file.name;
+    $('#photoSize').textContent = formatBytes(file.size);
+    $('#photoPreview').classList.add('show');
+  } catch (err) {
+    alert(err.message);
+    e.target.value = '';
+    $('#photoPreview').classList.remove('show');
+  }
+});
+$('#clearPhoto').addEventListener('click', () => {
+  $('#photo').value = '';
+  $('#photoPreview').classList.remove('show');
+});
+
+/* ---------- Signature value (upload OR drawing) ---------- */
+async function signatureValue() {
+  const upload = $('#signatureUpload').files[0];
+  if (upload) {
+    const v = await readFile(upload, 'Signature image must be under 2 MB.');
+    if (v) return v;
+  }
+  if (!hasSignatureDrawing) throw new Error('Draw your signature or upload a signature image.');
+  return signaturePad.toDataURL('image/png');
+}
+
+/* ---------- Photo value ---------- */
+async function photoValue() {
+  const v = await readFile($('#photo').files[0], 'Profile picture must be under 2 MB.');
+  if (!v) throw new Error('Take or upload a profile picture.');
+  return v;
+}
+
+/* ---------- Progress indicator ---------- */
+function setStep(n) {
+  $$('#regProgress .step').forEach((el, i) => {
+    el.classList.toggle('active', i + 1 === n);
+  });
+}
+
+/* ============================================================
+   RESEND OTP
+============================================================ */
+$('#resendOtpBtn').addEventListener('click', async () => {
+  const email = $('#email').value.trim();
+  if (!email) {
+    $('#message').textContent = 'Enter your email first.';
+    return;
+  }
+  if (resendCooldown > 0) return;
+  try {
+    await json('/api/auth/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    $('#message').textContent = 'A new code has been sent to your email.';
+    startResendCooldown(60);
+  } catch (err) {
+    $('#message').textContent = err.message;
+  }
+});
+
+function startResendCooldown(seconds) {
+  resendCooldown = seconds;
+  const btn = $('#resendOtpBtn');
+  btn.disabled = true;
+  btn.textContent = `RESEND (${resendCooldown}s)`;
+  clearInterval(resendTimer);
+  resendTimer = setInterval(() => {
+    resendCooldown--;
+    if (resendCooldown <= 0) {
+      clearInterval(resendTimer);
+      btn.disabled = false;
+      btn.textContent = 'RESEND';
+    } else {
+      btn.textContent = `RESEND (${resendCooldown}s)`;
+    }
+  }, 1000);
+}
+
+/* ============================================================
+   SUBMIT HANDLER
+============================================================ */
+$('#registerForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const msg = $('#message');
+  const btn = $('#submitButton');
+  msg.textContent = '';
+  msg.className = 'portal-message';
+
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+
+  try {
+    /* ---------- STEP 1: send OTP ---------- */
+    if (!otpRequested) {
+      const email = $('#email').value.trim();
+      if (!email) throw new Error('Enter your email address first.');
+
+      btn.textContent = 'Sending code…';
+      await json('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      otpRequested = true;
+      $('#otpGroup').hidden = false;
+      $('#otp').required = true;
+      $('#otp').focus();
+      btn.textContent = 'VERIFY OTP & SUBMIT';
+      msg.textContent = 'A 6-digit code was sent to your email. Enter it above and click again.';
+      msg.classList.add('is-ok');
+      setStep(2);
+      startResendCooldown(60);
+      btn.disabled = false;
+      return;
+    }
+
+    /* ---------- STEP 2: verify OTP ---------- */
+    if (!verificationToken) {
+      const email = $('#email').value.trim();
+      const otp   = $('#otp').value.trim();
+      if (!/^\d{6}$/.test(otp)) throw new Error('Enter the 6-digit code from your email.');
+
+      btn.textContent = 'Verifying code…';
+      const v = await json('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+      verificationToken = v.verificationToken;
+    }
+
+    /* ---------- STEP 3: submit registration ---------- */
+    btn.textContent = 'Submitting application…';
+
+    const signatureData = await signatureValue();
+    const photoData     = await photoValue();
+
+    const payload = {
+      name:  $('#name').value.trim(),
+      instrument: $('#instrument').value.trim(),
+      phone: $('#phone').value.trim(),
+      nationalId: $('#nationalId').value.trim(),
+      dateOfBirth: $('#dateOfBirth').value,
+      nationality: $('#nationality').value.trim(),
+      address: $('#address').value.trim(),
+      emergencyName: $('#emergencyName').value.trim(),
+      emergencyPhone: $('#emergencyPhone').value.trim(),
+      email: $('#email').value.trim(),
+      password: $('#password').value,
+      signature: signatureData,
+      photoData,
+      consent: $('#consent').checked ? 'accepted' : '',
+      verificationToken
+    };
+
+    const data = await json('/api/members/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    /* ---------- SUCCESS ---------- */
+    $('#memberIdDisplay').textContent = data.memberId || '—';
+    $('#formView').hidden = true;
+    $('#successView').hidden = false;
+    setStep(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.classList.add('is-error');
+    btn.disabled = false;
+    btn.textContent = verificationToken
+      ? 'SUBMIT APPLICATION'
+      : otpRequested ? 'VERIFY OTP & SUBMIT' : originalLabel;
+
+    // If OTP error, allow re-entry
+    if (/otp|code/i.test(err.message)) {
+      verificationToken = '';
+    }
+  }
+});
+</script>
+
+<!-- Start of Tawk.to Script -->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;s1.src='https://embed.tawk.to/6ab56c6b2c323b344704c61a/1k3aav15v';
+s1.charset='UTF-8';s1.setAttribute('crossorigin','*');s0.parentNode.insertBefore(s1,s0);
+})();
+Tawk_API.onLoad = function(){ Tawk_API.showWidget(); window.setInterval(function(){ Tawk_API.showWidget(); },2000); };
+Tawk_API.onChatHidden = function(){ Tawk_API.showWidget(); };
+</script>
+<!-- End of Tawk.to Script -->
+</body>
+</html>
